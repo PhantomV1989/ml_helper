@@ -41,7 +41,7 @@ class torch_helpers():
         # model details
         num_directions = 2 if bidirectional else 1
 
-        lstm = nn.LSTM(input_size=input_dim, hidden_size=hidden_size, num_layers=num_of_layers,
+        lstm = t.nn.LSTM(input_size=input_dim, hidden_size=hidden_size, num_layers=num_of_layers,
                        bidirectional=bidirectional)
 
         # initialize the hidden state.
