@@ -33,7 +33,8 @@ class tf_helpers():
 
 class torch_helpers():
     @staticmethod  # enforces a strict structure
-    def create_lstm(input_dim, output_size, batch_size, num_of_layers, bidirectional=False):
+    def create_lstm(input_dim, output_size, batch_size, num_of_layers, bidirectional=False, device='cpu'):
+        # returns model, hidden_states for propagation
         t.manual_seed(1)
         # data details
         hidden_size = output_size
@@ -42,14 +43,16 @@ class torch_helpers():
         num_directions = 2 if bidirectional else 1
 
         lstm = t.nn.LSTM(input_size=input_dim, hidden_size=hidden_size, num_layers=num_of_layers,
-                       bidirectional=bidirectional)
+                         bidirectional=bidirectional)
 
         # initialize the hidden state.
-        hidden = (t.randn(num_of_layers * num_directions, batch_size, hidden_size),  # this is for h_0,
-                  t.randn(num_of_layers * num_directions, batch_size, hidden_size))  # this is for c_0, cell state
+        hidden = (t.zeros(num_of_layers * num_directions, batch_size, hidden_size, device=device),  # this is for h_0,
+                  t.zeros(num_of_layers * num_directions, batch_size, hidden_size,
+                          device=device))  # this is for c_0, cell state
 
         # inputs = t.randn(seq_len, batch_size, input_dim)
         # out, hidden = lstm(inputs, hidden)
+        lstm.to(device=device)
         return lstm, hidden
 
     @staticmethod
@@ -92,7 +95,7 @@ class torch_helpers():
             bprop(x, y, [w_power, w_coefficient])
         return [w_power, w_coefficient], fprop, bprop
 
-    @staticmethod # unfinished
+    @staticmethod  # unfinished
     def sum_estimator(x, y, device=t.device("cpu"), dtype=t.float, lr=1e-2, iter=500000):
         # for forms Aa^x+Bb^y+Cc^z
         w_coefficient = t.ones([x.shape[1], 1], dtype=dtype, device=device,
@@ -127,7 +130,6 @@ class torch_helpers():
     @staticmethod
     def composite_estimator(x, y, hidden=10, device=t.device("cpu"), dtype=t.float, lr=1e-2, iter=50):
 
-
         composite_set = [
             torch_helpers.prod_estimator(x, y, iter=0),
             torch_helpers.prod_estimator(x, y, iter=0)
@@ -138,8 +140,6 @@ class torch_helpers():
 
         set_output = [x[1](x) for x in composite_set]
         set_output = t.cat(set_output, dim=1)
-
-
 
         # fn_ar = [[t.sigmoid,3],[t.tanh,3]]
         return
