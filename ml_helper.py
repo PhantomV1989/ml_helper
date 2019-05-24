@@ -312,7 +312,7 @@ class torch_helpers():
         # initialize the hidden state.
         hidden = (t.zeros(batch_size, output_size, device=device),  # this is for h_0,
                   t.zeros(batch_size, output_size, device=device))  # this is for c_0, cell state
-
+	lstm_cell.to(device=device)
         return lstm_cell, hidden
 
     @staticmethod
