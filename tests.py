@@ -3,42 +3,88 @@ import numpy as np
 import time
 
 
-x = np.random.rand(100, 2)
-y = np.zeros(100)
-for i in range(len(x)):
-    y[i] = 1 if np.sum(x[i]) > 1 else 0
+def test_one_hot():
+    x = np.random.rand(100, 2)
+    y = np.zeros(100)
+    for i in range(len(x)):
+        y[i] = 1 if np.sum(x[i]) > 1 else 0
 
-x = t.tensor(x, dtype=t.float32)
-y = t.tensor(y, dtype=t.int64)
+    x = t.tensor(x, dtype=t.float32)
+    y = t.tensor(y, dtype=t.int64)
 
-oh = t.eye(2)
-y = oh.index_select(0, y)
+    oh = t.eye(2)
+    y = oh.index_select(0, y)
 
-L1 = t.nn.Linear(2, 1000)
-L2 = t.nn.Linear(1000, 2)
+    L1 = t.nn.Linear(2, 1000)
+    L2 = t.nn.Linear(1000, 2)
 
-opt = t.optim.Adam(list(L1.parameters()) + list(L2.parameters()), lr=0.01)
+    opt = t.optim.Adam(list(L1.parameters()) + list(L2.parameters()), lr=0.01)
+
+    def closs(y, y_):
+        return y.sub(y_).pow(2).mean()
+
+    for i in range(100):
+        y_ = t.nn.Softmax()(L2(L1(x)).sigmoid())
+        t1 = time.time()
+        # bceloss = t.nn.BCELoss()(y_, y)
+        t2 = time.time()
+        # bceloss.backward(retain_graph=True)
+        t3 = time.time()
+
+        cus_loss = closs(y_, y)
+        t4 = time.time()
+        cus_loss.backward(retain_graph=True)
+        t5 = time.time()
+
+        # print('BCE:', str(t2 - t1), '    BCE bw:', str(t3 - t2), '   cL:', str(t4 - t3), '   cL bw:', str(t5 - t4))
+        wrong = y_.round().sub(y).abs().sum().data.item()
+        print(wrong)
+        opt.step()
+        opt.zero_grad()
 
 
-def closs(y, y_):
-    return y.sub(y_).pow(2).mean()
+def test_grad_accumulation():
+    x = t.rand([2, 100])
+    w = t.rand([100, 2], requires_grad=True)
+    y = t.tensor(np.asarray([[0, 1.0], [1.0, 0]]), dtype=t.float32)
+    optim = t.optim.SGD([w], lr=0.01)
+    _y = x.matmul(w).softmax(dim=1)
+
+    loss = t.nn.BCELoss()(_y, y)
+    loss.backward(retain_graph=True)
+    print('Grad of 2 data points is ', w._grad[0].data)
+    optim.zero_grad()
+
+    loss = t.nn.BCELoss()(_y[0], y[0])
+    loss.backward(retain_graph=True)
+    print('Grad of first data point is ', w._grad[0].data)
+    optim.zero_grad()
+
+    loss = t.nn.BCELoss()(_y[1], y[1])
+    loss.backward(retain_graph=True)
+    print('Grad of second data point is ', w._grad[0].data)
+    optim.zero_grad()
+
+    loss = t.nn.BCELoss()(_y[0], y[0])
+    loss.backward(retain_graph=True)
+    loss = t.nn.BCELoss()(_y[1], y[1])
+    loss.backward(retain_graph=True)
+    print('Grad of 2 data point backwarded consecutively is ', w._grad[0].data)
+    optim.zero_grad()
+
+    _yf = _y.reshape(shape=[-1])
+    yf = y.reshape(shape=[-1])
+    loss = t.nn.BCELoss()(_yf, yf)
+    loss.backward(retain_graph=True)
+    print('Grad of 2 data points with flattened structure is ', w._grad[0].data)
+    optim.zero_grad()
+
+    return
 
 
-for i in range(100):
-    y_ = t.nn.Softmax()(L2(L1(x)).sigmoid())
-    t1 = time.time()
-    #bceloss = t.nn.BCELoss()(y_, y)
-    t2 = time.time()
-    #bceloss.backward(retain_graph=True)
-    t3 = time.time()
+def test_lstm_order_sensitivity():
+    return
 
-    cus_loss = closs(y_, y)
-    t4 = time.time()
-    cus_loss.backward(retain_graph=True)
-    t5 = time.time()
 
-    # print('BCE:', str(t2 - t1), '    BCE bw:', str(t3 - t2), '   cL:', str(t4 - t3), '   cL bw:', str(t5 - t4))
-    wrong = y_.round().sub(y).abs().sum().data.item()
-    print(wrong)
-    opt.step()
-    opt.zero_grad()
+if __name__ == '__main__':
+    test_grad_accumulation()
