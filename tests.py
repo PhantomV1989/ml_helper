@@ -1,6 +1,7 @@
 import torch as t
 import numpy as np
 import time
+import copy
 
 
 def test_one_hot():
@@ -82,9 +83,27 @@ def test_grad_accumulation():
     return
 
 
+def test_lr():
+    w = t.tensor([1, 1], dtype=t.float32, requires_grad=True)
+    w._grad = t.tensor([1, 1], dtype=t.float32)
+
+    optim = t.optim.SGD([w], lr=0.02)
+    lr = np.arange(0, 1, 0.1)
+
+    for i in lr:
+        for j in optim.param_groups:
+            j['lr'] = i
+        a = copy.deepcopy(w.data.numpy())
+        optim.step()
+        b = copy.deepcopy(w.data.numpy())
+        print('Grad @ ', w._grad, '.  LR @ ', i, '  Step diff @ ', b - a)
+
+    return
+
+
 def test_lstm_order_sensitivity():
     return
 
 
 if __name__ == '__main__':
-    test_grad_accumulation()
+    test_lr()
