@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/ml_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ml_helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,10 +16,60 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ml_helper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="15" column="83" selection-start-line="15" selection-start-column="83" selection-end-line="15" selection-end-column="83" />
+            <state relative-caret-position="370">
+              <caret line="305" column="37" selection-start-line="305" selection-start-column="37" selection-end-line="305" selection-end-column="37" />
               <folding>
-                <element signature="e#0#23#0" expanded="true" />
+                <element signature="e#98#594#0" />
+                <element signature="e#188#594#0" />
+                <element signature="e#622#10030#0" />
+                <element signature="e#650#10030#0" />
+                <element signature="e#970#5170#0" />
+                <element signature="e#1212#1335#0" />
+                <element signature="e#2686#2783#0" />
+                <element signature="e#3429#3999#0" />
+                <element signature="e#3494#3909#0" />
+                <element signature="e#3666#3811#0" />
+                <element signature="e#4224#4588#0" />
+                <element signature="e#4738#5133#0" />
+                <element signature="e#4921#4936#0" />
+                <element signature="e#5373#9461#0" />
+                <element signature="e#6700#6880#0" />
+                <element signature="e#7052#7060#0" />
+                <element signature="e#7353#7502#0" />
+                <element signature="e#7663#7863#0" />
+                <element signature="e#8062#8274#0" />
+                <element signature="e#8403#9062#0" />
+                <element signature="e#9284#9433#0" />
+                <element signature="e#9522#10030#0" />
+                <element signature="e#10055#11054#0" />
+                <element signature="e#10124#10479#0" />
+                <element signature="e#10194#10382#0" />
+                <element signature="e#10225#10382#0" />
+                <element signature="e#10568#11056#0" />
+                <element signature="e#10568#10619#0" />
+                <element signature="e#10739#10959#0" />
+                <element signature="e#10835#10903#0" />
+                <element signature="e#11180#11553#0" />
+                <element signature="e#11310#11454#0" />
+                <element signature="e#13207#14585#0" />
+                <element signature="e#13207#13227#0" />
+                <element signature="e#13672#13937#0" />
+                <element signature="e#14035#14450#0" />
+                <element signature="e#14200#14406#0" />
+                <element signature="e#14717#15800#0" />
+                <element signature="e#15080#15162#0" />
+                <element signature="e#15260#15665#0" />
+                <element signature="e#15424#15621#0" />
+                <element signature="e#15932#16440#0" />
+                <element signature="e#15948#16070#0" />
+                <element signature="e#16584#16834#0" />
+                <element signature="e#17037#17195#0" />
+                <element signature="e#16911#16917#0" />
+                <element signature="e#16461#17548#0" />
+                <element signature="e#16540#16883#0" />
+                <element signature="e#16689#16809#0" />
+                <element signature="e#16964#17014#0" />
+                <element signature="e#17086#17548#0" />
               </folding>
             </state>
           </provider>
@@ -27,20 +78,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="514">
-              <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+            <state relative-caret-position="429">
+              <caret line="417" column="34" selection-start-line="417" selection-start-column="34" selection-end-line="417" selection-end-column="34" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
+                <element signature="e#1176#2356#0" />
+                <element signature="e#2378#2822#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/autograd/__init__.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1260">
-              <caret line="92" selection-start-line="92" selection-end-line="92" />
             </state>
           </provider>
         </entry>
@@ -53,6 +97,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/ml_helper.py" />
         <option value="$PROJECT_DIR$/tests.py" />
       </list>
     </option>
@@ -78,7 +123,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -90,6 +134,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -151,7 +196,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <frame x="67" y="25" width="1853" height="1055" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24972677" />
@@ -160,7 +205,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39956802" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39956802" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -178,61 +223,104 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>82</line>
-          <option name="timeStamp" value="1" />
+          <line>290</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>373</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>372</line>
+          <option name="timeStamp" value="74" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>421</line>
+          <option name="timeStamp" value="79" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>416</line>
+          <option name="timeStamp" value="84" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="current_label.shape" language="Python" />
+        <watch expression="current_context[np.random.randint(len(current_context))]" language="Python" />
+        <watch expression="current_context[0]" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
+    <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>start==30</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>a-b</expression-string>
+        <expression-string>current_context[np.random.randint(len(current_context))]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>print(a)</expression-string>
+        <expression-string>current_context[0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>optim.step()</expression-string>
+        <expression-string>current_context[0].shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>w._grad=t.tensor([1,1],dtype=t.float32)</expression-string>
+        <expression-string>current_context</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>w._grad</expression-string>
+        <expression-string>current_label.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>w._grad[0]</expression-string>
+        <expression-string>lstm_test(lstm_fprop2)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.arange(0,1,0.1)</expression-string>
+        <expression-string>lstm_test(lstm_fprop1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.arange(0,10,1)</expression-string>
+        <expression-string>lstm_test(lstm_fprop)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.arange(0,1,10)</expression-string>
+        <expression-string>lstm_test(lstm_fprop())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
+    </expressions>
+    <expressions id="setValue">
       <expression>
-        <expression-string>np.arange(10)</expression-string>
+        <expression-string>torch.Size([91, 4])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -246,16 +334,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ml_helper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="15" column="83" selection-start-line="15" selection-start-column="83" selection-end-line="15" selection-end-column="83" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/autograd/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1260">
@@ -263,12 +341,95 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/functional.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="1407" selection-start-line="1407" selection-end-line="1407" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/numpy/core/_methods.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="35" selection-start-line="35" selection-end-line="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ml_helper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="305" column="37" selection-start-line="305" selection-start-column="37" selection-end-line="305" selection-end-column="37" />
+          <folding>
+            <element signature="e#98#594#0" />
+            <element signature="e#188#594#0" />
+            <element signature="e#622#10030#0" />
+            <element signature="e#650#10030#0" />
+            <element signature="e#970#5170#0" />
+            <element signature="e#1212#1335#0" />
+            <element signature="e#2686#2783#0" />
+            <element signature="e#3429#3999#0" />
+            <element signature="e#3494#3909#0" />
+            <element signature="e#3666#3811#0" />
+            <element signature="e#4224#4588#0" />
+            <element signature="e#4738#5133#0" />
+            <element signature="e#4921#4936#0" />
+            <element signature="e#5373#9461#0" />
+            <element signature="e#6700#6880#0" />
+            <element signature="e#7052#7060#0" />
+            <element signature="e#7353#7502#0" />
+            <element signature="e#7663#7863#0" />
+            <element signature="e#8062#8274#0" />
+            <element signature="e#8403#9062#0" />
+            <element signature="e#9284#9433#0" />
+            <element signature="e#9522#10030#0" />
+            <element signature="e#10055#11054#0" />
+            <element signature="e#10124#10479#0" />
+            <element signature="e#10194#10382#0" />
+            <element signature="e#10225#10382#0" />
+            <element signature="e#10568#11056#0" />
+            <element signature="e#10568#10619#0" />
+            <element signature="e#10739#10959#0" />
+            <element signature="e#10835#10903#0" />
+            <element signature="e#11180#11553#0" />
+            <element signature="e#11310#11454#0" />
+            <element signature="e#13207#14585#0" />
+            <element signature="e#13207#13227#0" />
+            <element signature="e#13672#13937#0" />
+            <element signature="e#14035#14450#0" />
+            <element signature="e#14200#14406#0" />
+            <element signature="e#14717#15800#0" />
+            <element signature="e#15080#15162#0" />
+            <element signature="e#15260#15665#0" />
+            <element signature="e#15424#15621#0" />
+            <element signature="e#15932#16440#0" />
+            <element signature="e#15948#16070#0" />
+            <element signature="e#16584#16834#0" />
+            <element signature="e#17037#17195#0" />
+            <element signature="e#16911#16917#0" />
+            <element signature="e#16461#17548#0" />
+            <element signature="e#16540#16883#0" />
+            <element signature="e#16689#16809#0" />
+            <element signature="e#16964#17014#0" />
+            <element signature="e#17086#17548#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="514">
-          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
+        <state relative-caret-position="429">
+          <caret line="417" column="34" selection-start-line="417" selection-start-column="34" selection-end-line="417" selection-end-column="34" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#1176#2356#0" />
+            <element signature="e#2378#2822#0" />
           </folding>
         </state>
       </provider>

@@ -2,6 +2,7 @@ import tensorflow as tf
 import torch as t
 import numpy as np
 
+
 class SimpleNeuralNetworkModel:
     # for instant usage
     @staticmethod
@@ -15,6 +16,7 @@ class SimpleNeuralNetworkModel:
         model.add(Dense(x_input.shape[1]))
         model.compile(loss='mean_squared_error', optimizer='adam', metrics=['mse'])
         return model
+
 
 class DataGenerators:
     class Unsupervised:
@@ -236,7 +238,7 @@ class DataGenerators:
             return loss
 
 
-class tf_helpers():
+class TfHelper:
     @staticmethod
     def create_layers(layer_sizes, name=''):
         output = []
@@ -264,7 +266,7 @@ class tf_helpers():
         return output
 
 
-class torch_helpers():
+class TorchHelper:
     @staticmethod
     def create_linear_layers(layer_sizes, use_bias=True, device='cpu'):
         # returns linear, learning params
@@ -301,18 +303,19 @@ class torch_helpers():
 
         # inputs = t.randn(seq_len, batch_size, input_dim)
         # out, hidden = lstm(inputs, hidden)
+        # where hidden is  (h_0, c_0)
         lstm.to(device=device)
         return lstm, hidden
 
     @staticmethod
-    def create_lstm_cell(input_size, output_size, batch_size, bidirectional=False, bias=True, device='cpu'):
+    def create_lstm_cell(input_size, output_size, batch_size,bias=True, device='cpu'):
         t.manual_seed(1)
         lstm_cell = t.nn.LSTMCell(input_size=input_size, hidden_size=output_size, bias=bias)
 
         # initialize the hidden state.
         hidden = (t.zeros(batch_size, output_size, device=device),  # this is for h_0,
                   t.zeros(batch_size, output_size, device=device))  # this is for c_0, cell state
-	lstm_cell.to(device=device)
+        lstm_cell.to(device=device)
         return lstm_cell, hidden
 
     @staticmethod
@@ -391,8 +394,8 @@ class torch_helpers():
     def composite_estimator(x, y, hidden=10, device=t.device("cpu"), dtype=t.float, lr=1e-2, iter=50):
 
         composite_set = [
-            torch_helpers.prod_estimator(x, y, iter=0),
-            torch_helpers.prod_estimator(x, y, iter=0)
+            TorchHelper.prod_estimator(x, y, iter=0),
+            TorchHelper.prod_estimator(x, y, iter=0)
         ]
 
         w_hidden = t.randn([hidden * len(composite_set), y.shape[1]], dtype=dtype, device=device,
@@ -402,6 +405,42 @@ class torch_helpers():
         set_output = t.cat(set_output, dim=1)
 
         # fn_ar = [[t.sigmoid,3],[t.tanh,3]]
+        return
+
+
+# undone
+class AttentionModel:
+    def __init__(self, filter_size, filter_count, hidden_size, output_size, device=t.device('cpu')):
+        self.filter_size = filter_size
+        self.filter_count = filter_count
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.device = device
+
+        first_layer = [t.nn.Linear(filter_size, hidden_size) for i in range(filter_count)]
+        [x.to(device) for x in first_layer]
+
+        second_layer = t.nn.Linear(filter_count * hidden_size, output_size)
+        second_layer.to(device)
+
+        self.params = [
+            {'params': sum([list(x.parameters()) for x in first_layer], [])},
+            {'params': list(second_layer.parameters())},
+        ]
+        return
+
+    def fprop(self, data):
+        fl = []
+        for i in range(20):
+            start = i * field_size
+            tt = x[start:start + field_size].reshape(-1)
+            r = first_layer[i](tt)
+            fl.append(r)
+        sli = t.cat(fl)
+        output = second_layer(sli).softmax(dim=0)
+        return output
+
+    def bprop(self, data):
         return
 
 
@@ -433,3 +472,28 @@ class Hidden:
             return np.std(np.abs(np.add(y_, -y)), axis=1)
 
         return
+
+
+def evaluate(_y, y):  # assuming 0.5 decision,0 as Positive
+    _y = np.abs(np.round(_y))
+
+    _pos = []
+    _neg = []
+    for i, v in enumerate(y):
+        _pos.append(_y[i]) if v == 0 else _neg.append(_y[i])
+
+    fn = np.sum(_pos)
+    tp = len(_pos) - fn
+
+    tn = np.sum(_neg)
+    fp = len(_neg) - tn
+
+    precision = tp / (tp + fp) if (tp + fp) != 0 else 'inf'
+    recall = tp / (tp + fn) if (tp + fn) != 0 else 'inf'
+
+    if precision == 'inf' or recall == 'inf':
+        f1 = 'inf'
+    else:
+        f1 = (2 * precision * recall) / (precision + recall)
+    return {'F1': f1, 'Precision': precision, 'Recall': recall, 'True positive': tp, 'True negative': tn,
+            'False positive': fp, 'False negative': fn}
