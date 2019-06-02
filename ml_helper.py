@@ -308,7 +308,7 @@ class TorchHelper:
         return lstm, hidden
 
     @staticmethod
-    def create_lstm_cell(input_size, output_size, batch_size,bias=True, device='cpu'):
+    def create_lstm_cell(input_size, output_size, batch_size, bias=True, device='cpu'):
         t.manual_seed(1)
         lstm_cell = t.nn.LSTMCell(input_size=input_size, hidden_size=output_size, bias=bias)
 
@@ -475,12 +475,12 @@ class Hidden:
 
 
 def evaluate(_y, y):  # assuming 0.5 decision,0 as Positive
-    _y = np.abs(np.round(_y))
+    _y = [0 if x >= 0.5 else 1 for x in _y]
 
     _pos = []
     _neg = []
     for i, v in enumerate(y):
-        _pos.append(_y[i]) if v == 0 else _neg.append(_y[i])
+        _pos.append(_y[i]) if v == 1 else _neg.append(_y[i])
 
     fn = np.sum(_pos)
     tp = len(_pos) - fn
@@ -496,4 +496,55 @@ def evaluate(_y, y):  # assuming 0.5 decision,0 as Positive
     else:
         f1 = (2 * precision * recall) / (precision + recall)
     return {'F1': f1, 'Precision': precision, 'Recall': recall, 'True positive': tp, 'True negative': tn,
+            'False positive': fp, 'False negative': fn}
+
+
+def evaluate_optimized(_y, y):  # assuming 0.5 decision,0 as Positive
+    decision_boundary = 0.5
+    up = (np.max(_y) + decision_boundary) / 2
+    lo = (np.min(_y) + decision_boundary) / 2
+
+    def get_f1(db):
+        _yc = [0 if x > db else 1 for x in _y]
+
+        _pos = []
+        _neg = []
+        for i, v in enumerate(y):
+            _pos.append(_yc[i]) if v == 0 else _neg.append(_yc[i])
+
+        fn = np.sum(_pos)
+        tp = len(_pos) - fn
+
+        tn = np.sum(_neg)
+        fp = len(_neg) - tn
+
+        precision = tp / (tp + fp) if (tp + fp) != 0 else 'inf'
+        recall = tp / (tp + fn) if (tp + fn) != 0 else 'inf'
+
+        if precision == 'inf' or recall == 'inf':
+            f1 = 'inf'
+        else:
+            f1 = (2 * precision * recall) / (precision + recall)
+        return f1, precision, recall, tp, tn, fp, fn
+
+    count = 0
+    while True:
+        m = get_f1(decision_boundary)[0]
+        u = get_f1(up)[0]
+        l = get_f1(lo)[0]
+
+        max_l = [l, lo] if l > m else [u, up]
+        if not isinstance(max_l[0], float) or np.isnan(max_l[0]):
+            break
+        if abs(max_l[1] - decision_boundary) < 0.01 or count >= 100:
+            break
+        else:
+            decision_boundary = max_l[1]
+            up = (np.max(_y) + decision_boundary) / 2
+            lo = (np.min(_y) + decision_boundary) / 2
+            count += 1
+
+    f1, precision, recall, tp, tn, fp, fn = get_f1(decision_boundary)
+    return {'Decision boundary': decision_boundary, 'F1': f1, 'Precision': precision, 'Recall': recall,
+            'True positive': tp, 'True negative': tn,
             'False positive': fp, 'False negative': fn}
