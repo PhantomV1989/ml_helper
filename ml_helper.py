@@ -408,42 +408,6 @@ class TorchHelper:
         return
 
 
-# undone
-class AttentionModel:
-    def __init__(self, filter_size, filter_count, hidden_size, output_size, device=t.device('cpu')):
-        self.filter_size = filter_size
-        self.filter_count = filter_count
-        self.hidden_size = hidden_size
-        self.output_size = output_size
-        self.device = device
-
-        first_layer = [t.nn.Linear(filter_size, hidden_size) for i in range(filter_count)]
-        [x.to(device) for x in first_layer]
-
-        second_layer = t.nn.Linear(filter_count * hidden_size, output_size)
-        second_layer.to(device)
-
-        self.params = [
-            {'params': sum([list(x.parameters()) for x in first_layer], [])},
-            {'params': list(second_layer.parameters())},
-        ]
-        return
-
-    def fprop(self, data):
-        fl = []
-        for i in range(20):
-            start = i * field_size
-            tt = x[start:start + field_size].reshape(-1)
-            r = first_layer[i](tt)
-            fl.append(r)
-        sli = t.cat(fl)
-        output = second_layer(sli).softmax(dim=0)
-        return output
-
-    def bprop(self, data):
-        return
-
-
 class Hidden:
     @staticmethod
     def get_bin_pos(v, bin_rng, return_bin_range=False):
