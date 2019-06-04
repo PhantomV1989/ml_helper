@@ -98,6 +98,7 @@ def torch_backward_list_tensor_test():
     return
 
 
+# you cannot just use a new optim with same params and different lr, lr wont change like that!
 def dynamic_learning_rate():
     w = t.tensor([1, 1], dtype=t.float32, requires_grad=True)
     w._grad = t.tensor([1, 1], dtype=t.float32)
@@ -760,4 +761,306 @@ def unordered_context_test_same_unit_length():  # contains atomic patterns 1 let
 
     return
 
-unordered_context_test_same_unit_length()
+
+def continuous_timeseries_test():
+    # in this example, both datasets contain the same pattern, only difference is the time difference between eventa
+    # this tests LSTM ability to distinguish differences in relative time differences, hence able do away with modelling
+    # discrete time steps traditionally, which has many cons such as time step optimization
+    # Results: 100% accuracy
+    base_events = '0123'
+    pattern = base_events * 100
+    time_init = t.tensor([0.0], device=tdevice)
+    time_lag_a = t.rand([10, 10], device=tdevice)
+    time_lag_b = t.rand([10, 10], device=tdevice)
+
+    emb_size = 3
+    data_count = 100
+    time_len = 10
+
+    noise_percent = 0
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    label_a = []
+    label_b = []
+
+    def to_emb(a):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        return a
+
+    for i in range(data_count):
+        np.random.seed(dt.datetime.now().microsecond)
+        ii = np.random.randint(0, len(pattern) - time_len)
+        pattern_fragment = pattern[ii:ii + time_len]
+        frag_emb = to_emb(pattern_fragment)
+
+        temp_a = []
+        temp_b = []
+        for i in range(len(pattern_fragment)):
+            if i == 0:
+                temp_a.append(t.cat([frag_emb[i], time_init]))
+                temp_b.append(t.cat([frag_emb[i], time_init]))
+            else:
+                prev = int(pattern_fragment[i - 1])
+                cur = int(pattern_fragment[i])
+
+                # emb, then time info
+                temp_a.append(t.cat([frag_emb[i], time_lag_a[prev, cur].unsqueeze(0)]))
+                temp_b.append(t.cat([frag_emb[i], time_lag_b[prev, cur].unsqueeze(0)]))
+        label_a.append(t.stack(temp_a))
+        label_b.append(t.stack(temp_b))
+
+    ya = t.tensor([[1.0, 0]] * data_count, device=tdevice)
+    yb = t.tensor([[0, 1.0]] * data_count, device=tdevice)
+
+    y = t.cat([ya, yb])
+
+    def _h(fp, op, verbose=True):
+        aout = [fp(x) for x in label_a]
+        bout = [fp(x) for x in label_b]
+
+        aout = t.stack(aout)
+        bout = t.stack(bout)
+        _y = t.cat([aout, bout])
+
+        loss = t.nn.BCELoss()(_y, y)
+
+        loss.backward()  # slow
+        op.step()
+        op.zero_grad()
+
+        _y1 = np.asarray([x[0].data.item() for x in _y])
+        y1 = np.asarray([x[0].data.item() for x in y])
+        scores = ml_helper.evaluate(_y1, y1)
+        if verbose:
+            print(' F1', scores['F1'], '   TP:', scores['True positive'], '  TN:', scores['True negative'])
+        return loss.data.cpu().item()
+
+    # def test(fp):
+    #     a = []
+    #     b = []
+    #
+    #     for i in range(100):
+    #         np.random.seed(dt.datetime.now().microsecond)
+    #         ii = np.random.randint(0, len(pattern_a) - time_len)
+    #         a.append(to_emb(pattern_a[ii:ii + time_len]))
+    #         b.append(to_emb(pattern_b[ii:ii + time_len]))
+    #
+    #     ra = [fp(x)[0].data.item() for x in a]
+    #     rb = [fp(x)[0].data.item() for x in b]
+    #
+    #     correct = len(list(filter(lambda x: x > 0.5, ra))) + len(list(filter(lambda x: x <= 0.5, rb)))
+    #     wrong = len(list(filter(lambda x: x < 0.5, ra))) + len(list(filter(lambda x: x >= 0.5, rb)))
+    #
+    #     return {'correct': correct, 'wrong': wrong}
+
+    def lstm_test():
+        print('~~~~~~~~~~~~~~~~LSTM test~~~~~~~~~~~~~~~~~~~~')
+        out_size = 10
+        layers = 1
+        lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size + 1, output_size=out_size, batch_size=1,
+                                                       num_of_layers=layers,
+                                                       device=tdevice)
+        last_w = t.nn.Linear(out_size * layers, 2)
+        last_w.to(tdevice)
+
+        last_w2 = t.nn.Linear(100, 2)
+        last_w2.to(tdevice)
+
+        params = [
+            {'params': list(lstm.parameters())},
+            {'params': list(last_w.parameters())},
+            {'params': list(last_w2.parameters())}
+        ]
+        lstm_optim = t.optim.SGD(params, lr=0.1)
+
+        def lstm_fprop(x):
+            out, h = lstm(x.unsqueeze(1), init)
+            ii = out.reshape(-1)
+            r = last_w2(ii).softmax(dim=0)  # 0 is h, 1 is c
+            return r
+
+        def lstm_fprop1(x):
+            out, h = lstm(x.unsqueeze(1), init)
+            ii = h[0].reshape(-1)
+            r = last_w(ii).softmax(dim=0)  # 0 is h, 1 is c
+            return r
+
+        def lstm_fprop2(x):
+            out, h = lstm(x.unsqueeze(1), init)
+            ii = h[1].reshape(-1)
+            r = last_w(ii).softmax(dim=0)  # 0 is h, 1 is c
+            return r
+
+        def one(f, lstm_optim):
+            for i in range(1200):
+                if i > 400:
+                    lstm_optim = t.optim.SGD(params, lr=0.04)
+                elif i > 800:
+                    lstm_optim = t.optim.SGD(params, lr=0.02)
+                elif i > 1200:
+                    lstm_optim = t.optim.SGD(params, lr=0.01)
+
+                if i % 10 == 0:
+                    loss = _h(f, lstm_optim, verbose=True)
+                    print(i, '   Noise:', noise_percent, '  Loss:', loss)
+                else:
+                    loss = _h(f, lstm_optim, verbose=False)
+
+            # r = [test(f) for i in range(50)]
+            return
+
+        r1 = one(lstm_fprop2, lstm_optim)
+        #
+        # # dynamic length test, longer seq yields better confidence at higher noise levels
+        # test_a = lstm_fprop(to_emb(pattern_a[61:78]))
+        # test_b = lstm_fprop(to_emb(pattern_b[18:87]))
+        return
+
+    lstm_test()
+    return
+
+
+def noise_training_noisy_positives():
+    # Both datasets contain 100% noisy data points. But one of them has some data points containing true patterns.
+    # Usecase: Manual labelling of positive labels, of which some of them are labelled wrongly (negatives in a positive
+    # set)
+    # Positive set may contain negatives, negative set only contains negatives
+    # Goal: Model's ability to get high True positives when there are wrongly labelled positives
+
+    # Results:
+    # 95% valid, 0% noise, 1200 iter, still decreasing
+    # 86% acc 99%TP 72% TN, 30% noise, 1200 iter, still decreasing
+    # 72% acc 89%TP 56% TN, 50% noise, 1200 iter, still decreasing
+    # 59% acc 54%TP 65% TN, 70% noise, 1200 iter
+    key_patterns = '1234'
+    s = '1234567890'
+
+    data_count = 100
+    time_len = 10
+
+    noise_level = 0.7
+
+    label_a = []
+    label_b = []
+
+    emb_size = 3
+
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(a):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        return a
+
+    def _h(fp, op, verbose=True):
+        aout = [fp(x) for x in label_a]
+        bout = [fp(x) for x in label_b]
+
+        aout = t.stack(aout)
+        bout = t.stack(bout)
+        _y = t.cat([aout, bout])
+
+        loss = t.nn.BCELoss()(_y, y)
+
+        loss.backward()  # slow
+        op.step()
+        op.zero_grad()
+
+        _y1 = np.asarray([x[0].data.item() for x in _y])
+        y1 = np.asarray([x[0].data.item() for x in y])
+        scores = ml_helper.evaluate(_y1, y1)
+        if verbose:
+            print(' F1', scores['F1'], '   TP:', scores['True positive'], '  TN:', scores['True negative'])
+        return loss.data.cpu().item()
+
+    for i in range(data_count):
+        l = ''.join(np.random.choice(list(s), time_len))
+        if np.random.rand() > noise_level:
+            # insert key patterns
+            start = np.random.randint(0, len(l) - len(key_patterns))
+            l = l[0:start] + key_patterns + l[start:-len(key_patterns)]
+        label_a.append(l)
+        label_b.append(''.join(np.random.choice(list(s), time_len)))  # neg only contains neg AKA all noises
+    label_a = [to_emb(x) for x in label_a]
+    label_b = [to_emb(x) for x in label_b]
+
+    ya = t.tensor([[1.0, 0]] * data_count, device=tdevice)
+    yb = t.tensor([[0, 1.0]] * data_count, device=tdevice)
+
+    y = t.cat([ya, yb])
+
+    def test(fp):  # validation set has no noise
+        a = []
+        b = []
+
+        for i in range(50):
+            l = ''.join(np.random.choice(list(s), time_len))
+            # this time, there should be no noises
+            start = np.random.randint(0, len(l) - len(key_patterns))
+            l = l[0:start] + key_patterns + l[start:-len(key_patterns)]
+
+            a.append(l)
+            b.append(''.join(np.random.choice(list(s), time_len)))
+        a = [to_emb(x) for x in a]
+        b = [to_emb(x) for x in b]
+
+        ra = [fp(x)[0].data.item() for x in a]
+        rb = [fp(x)[0].data.item() for x in b]
+
+        tp = len(list(filter(lambda x: x > 0.5, ra)))
+        tn = len(list(filter(lambda x: x <= 0.5, rb)))
+        fp = len(list(filter(lambda x: x < 0.5, ra)))
+        fn = len(list(filter(lambda x: x >= 0.5, rb)))
+
+        correct = tp + tn
+        wrong = fp + fn
+
+        return {'correct': correct, 'wrong': wrong, 'tp': tp, 'tn': tn, 'fp': fp, 'fn': fn}
+
+    def lstm_test():
+        print('~~~~~~~~~~~~~~~~LSTM test~~~~~~~~~~~~~~~~~~~~')
+        out_size = 10
+        layers = 1
+        lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=out_size, batch_size=1,
+                                                       num_of_layers=layers,
+                                                       device=tdevice)
+        last_w = t.nn.Linear(out_size * layers, 2)
+        last_w.to(tdevice)
+
+        last_w2 = t.nn.Linear(out_size, 2)
+        last_w2.to(tdevice)
+
+        params = [
+            {'params': list(lstm.parameters())},
+            {'params': list(last_w.parameters())},
+            {'params': list(last_w2.parameters())}
+        ]
+        lstm_optim = t.optim.SGD(params, lr=0.25)
+
+        def lstm_fprop2(x):
+            # 95% valid, 0% noise, 1200 iter, still decreasing
+            # 86% acc 99%TP 72% TN, 30% noise, 1200 iter, still decreasing
+            # 72% acc 89%TP 56% TN, 50% noise, 1200 iter, still decreasing
+            # 59% acc 54%TP 65% TN, 70% noise, 1200 iter
+            out, h = lstm(x.unsqueeze(1), init)
+            ii = h[1].reshape(-1)
+            r = last_w(ii).softmax(dim=0)  # 0 is h, 1 is c
+            return r
+
+        def one(f, lstm_optim):
+            for i in range(1200):
+                if i % 10 == 0:
+                    loss = _h(f, lstm_optim, verbose=True)
+                    print(i, '  Noise:', noise_level, ' Loss:', loss)
+                else:
+                    loss = _h(f, lstm_optim, verbose=False)
+
+            r = [test(f) for i in range(50)]
+            return r
+
+        r1 = one(lstm_fprop2, lstm_optim)
+        return
+
+    lstm_test()
+    return
