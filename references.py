@@ -1069,7 +1069,8 @@ def noise_training_noisy_positives():
 # anomaly detection time series
 def noise_training_noisy_negatives_autoencoder_ann_vs_lstm():
     # Anomaly detection against time series of random length
-    # Conclusion: Mean aggregration ANN is still best with 1% noise detection rate, but require longer time length
+    # Conclusion: Mean aggregration ANN is still best with 1% noise detection rate, but require longer time length and
+    # tanh
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~LSTM~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Finished training in  2:04:46.741849 <-----fking 2 hours
@@ -1120,7 +1121,7 @@ def noise_training_noisy_negatives_autoencoder_ann_vs_lstm():
     #      Bad mean: 0.0013094970490783453      Bad max: 0.025551117956638336    Bad min: 6.687895237611485e-10
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ANN only sensivity optimization~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Conclusion: Sensivity is tested at best 1% noise detection, with longer time length.
+    # Conclusion: Sensivity is tested at best 1% noise detection, with longer time length and tanh activation
 
     # data_count = 600
     # max_time_len = 200
