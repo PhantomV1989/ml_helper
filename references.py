@@ -1426,3 +1426,227 @@ def noise_training_noisy_negatives_autoencoder_ann_vs_lstm():
     # lstm_test(2000)
     ann_test(2000)
     return
+
+
+# tests untrained lstm's sensivity to very old events
+def untrained_lstm_sensivity_test():
+    s = list('123456789')
+    emb_size = 4
+
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(a):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        return a.unsqueeze(1)
+
+    out_size = 10
+    layers = 2
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=out_size, batch_size=1,
+                                                   num_of_layers=layers,
+                                                   device=tdevice)
+
+    def get_mse(s1, s2):
+        s1 = to_emb(s1)
+        s2 = to_emb(s2)
+        o1, h1 = lstm(s1, init)
+        o2, h2 = lstm(s2, init)
+
+        l = t.nn.MSELoss()(h1[1], h2[1])
+        return l.data.cpu().item()
+
+    get_mse('123', '4564')
+    l = get_mse('1239999999999999999999999999999999999999', '9999999999999999999999999999999999999999')  # 5E-16
+    l = get_mse('846', '397')  # 0.0054
+    return
+
+
+# ann cannot detect sequences as expected
+def sequence_detection_ann_aggregation_test():
+    seq_a = '1234567890'
+    seq_b = '0987654321'
+
+    emb_size = 5
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(x):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in x]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        time = t.linspace(0, 1, len(x), device=tdevice)
+        f = []
+        for i in range(len(x)):
+            f.append(t.cat([a[i], time[i].unsqueeze(0)]))
+        f = t.stack(f)
+        return f
+
+    def _tself(fp, op):
+        y = to_emb(seq_a)
+        _y = fp(y)
+        loss = t.nn.MSELoss()(_y, y)
+
+        loss.backward()
+        op.step()
+        op.zero_grad()
+
+        return loss.data.cpu().item()
+
+    def _tclass(fp, op):
+        a = fp(to_emb(seq_a))
+        b = fp(to_emb(seq_b))
+        _y = t.stack([a, b])
+        y = t.tensor(np.asarray([[1, 0.0], [0.0, 1.0]]), dtype=t.float32, device=tdevice)
+        loss = t.nn.BCELoss()(_y, y)
+
+        loss.backward()
+        op.step()
+        op.zero_grad()
+
+        return loss.data.cpu().item()
+
+    def ann_ac_test(xx):
+        neck = 3
+        w1 = t.nn.Linear(emb_size + 1, neck)
+        w1.to(tdevice)
+
+        w2 = t.nn.Linear(neck, emb_size + 1)
+        w2.to(tdevice)
+
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        optim = t.optim.SGD(params, lr=0.02)
+
+        def fprop(x):
+            o1 = x.mean(dim=0)
+            o = w1(o1).tanh()
+            o = w2(o)
+            return o
+
+        time_a = dt.datetime.now()
+        for i in range(xx):
+            loss = _tself(fprop, optim)
+            if i % 10 == 0:
+                print(i, ' Loss:', loss)
+
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+
+        def tt(x):
+            y = to_emb(x)
+            _y = fprop(y)
+            loss = t.nn.MSELoss()(_y, y)
+            return loss.data.cpu().item()
+
+        print('Loss seq a:', str(tt(seq_a)))
+        print('Loss seq b:', str(tt(seq_b)))
+
+        return
+
+    def ann_classifier_test(xx):
+        w1 = t.nn.Linear(emb_size + 1, 5)
+        w1.to(tdevice)
+
+        w2 = t.nn.Linear(5, 2)
+        w2.to(tdevice)
+
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        optim = t.optim.SGD(params, lr=0.02)
+
+        def fprop(x):
+            o1 = x.mean(dim=0)
+            o = w1(o1).tanh()
+            o = w2(o).softmax(dim=0)
+            return o
+
+        time_a = dt.datetime.now()
+        for i in range(xx):
+            loss = _tclass(fprop, optim)
+            if i % 10 == 0:
+                print(i, ' Loss:', loss)
+
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+
+        def tt(x):
+            y = to_emb(x)
+            _y = fprop(y)
+            loss = t.nn.MSELoss()(_y, y)
+            return loss.data.cpu().item()
+
+        return
+
+    # ann_ac_test(100)
+    ann_classifier_test(1000)
+
+    return
+
+
+# this tests if different models converges if trained on same data,
+# for categorially different models even if they see the same data
+# conclusion: different models are DIFFERENT even if trained on same data
+def models_similarity_test_on_same_data():
+    ''' Results
+    i: 0   loss: 0.2849670350551605
+    i: 1000   loss: 0.06827231496572495
+    i: 2000   loss: 0.06409560889005661
+    i: 3000   loss: 0.06236245855689049
+    i: 4000   loss: 0.06132930889725685
+    i: 5000   loss: 0.060513466596603394
+    i: 6000   loss: 0.0598052553832531
+    i: 7000   loss: 0.05918245390057564
+    i: 8000   loss: 0.05864206328988075
+    i: 9000   loss: 0.05818251892924309
+    i: 0   loss: 0.36589521169662476    |m1-m2|: 0.2643558979034424
+    i: 1000   loss: 0.06521538645029068    |m1-m2|: 0.2612735629081726
+    i: 2000   loss: 0.06165115535259247    |m1-m2|: 0.2723885178565979
+    i: 3000   loss: 0.06037070229649544    |m1-m2|: 0.2795097827911377
+    i: 4000   loss: 0.05963187292218208    |m1-m2|: 0.282612681388855
+    i: 5000   loss: 0.05906539037823677    |m1-m2|: 0.2847711443901062
+    i: 6000   loss: 0.05859127268195152    |m1-m2|: 0.2857397496700287
+    i: 7000   loss: 0.0581863597035408    |m1-m2|: 0.2859709560871124
+    i: 8000   loss: 0.057838816195726395    |m1-m2|: 0.2861637473106384
+    i: 9000   loss: 0.05753947049379349    |m1-m2|: 0.2861420810222626
+    '''
+    feat = 15
+    epoch = 10000
+    y = t.rand([100, feat], device=tdevice)
+
+    def get_ae():
+        w1 = t.nn.Linear(feat, 3)
+        w1.to(tdevice)
+        w2 = t.nn.Linear(3, feat)
+        w2.to(tdevice)
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        lstm_optim = t.optim.SGD(params, lr=0.06)
+        return [w1, w2, lstm_optim]
+
+    def _t(m, d):
+        o = m[0](d)
+        o = m[1](o).tanh()
+
+        loss = t.nn.MSELoss()(o, d)
+        loss.backward()
+        m[2].step()
+        m[2].zero_grad()
+        return loss.data.cpu().item()
+
+    m1 = get_ae()
+    for i in range(epoch):
+        l = _t(m1, y)
+        if i % 1000 == 0:
+            print('i:', i, '  loss:', l)
+
+    m2 = get_ae()
+    for i in range(epoch):
+        l = _t(m2, y)
+        d = m2[0].weight.sub(m1[0].weight).abs().mean().data.cpu().item()
+        if i % 1000 == 0:
+            print('i:', i, '  loss:', l, '   |m1-m2|:', d)
+    return
