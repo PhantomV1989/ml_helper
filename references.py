@@ -13,6 +13,8 @@ Ordered vs unordered context:
 
 LSTM vs ANN time series:
     For fixed length time series, ANN and LSTM are comparable. But LSTM is harder to train
+
+Autoencoder does not always have a folded distribution despite training every value for minimum! This ability is not controlled by AE layer count as well.
 '''
 
 tdevice = t.device('cpu')

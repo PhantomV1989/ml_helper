@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,11 +13,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="373" selection-start-line="373" selection-end-line="373" />
+            <state relative-caret-position="342">
+              <caret line="533" column="4" selection-start-line="533" selection-start-column="4" selection-end-line="533" selection-end-column="4" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
                 <element signature="e#7813#13639#0" />
@@ -27,11 +26,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1405">
-              <caret line="1651" column="10" selection-start-line="1651" selection-start-column="10" selection-end-line="1651" selection-end-column="10" />
+            <state relative-caret-position="1650">
+              <caret line="1368" column="23" selection-start-line="1368" selection-start-column="19" selection-end-line="1368" selection-end-column="23" />
               <folding>
                 <element signature="e#101#428#1" />
                 <element signature="e#501#3033#0" />
@@ -145,10 +144,8 @@
                 <element signature="e#36716#37047#0" />
                 <element signature="e#36754#36980#0" />
                 <element signature="e#36790#36898#0" />
-                <element signature="e#37234#52602#0" />
                 <element signature="e#37234#37290#0" />
                 <element signature="e#45959#46300#0" />
-                <element signature="e#46344#46597#0" />
                 <element signature="e#46637#47852#0" />
                 <element signature="e#46745#47650#0" />
                 <element signature="e#47068#47627#0" />
@@ -166,14 +163,8 @@
                 <element signature="e#48731#48862#0" />
                 <element signature="e#48940#49035#0" />
                 <element signature="e#49302#49345#0" />
-                <element signature="e#49442#50265#0" />
-                <element signature="e#49583#50250#0" />
                 <element signature="e#49812#49879#0" />
-                <element signature="e#50297#51134#0" />
                 <element signature="e#50461#50565#0" />
-                <element signature="e#50646#50741#0" />
-                <element signature="e#50818#51002#0" />
-                <element signature="e#50851#50929#0" />
                 <element signature="e#51167#52549#0" />
                 <element signature="e#51725#51911#0" />
                 <element signature="e#51997#52146#0" />
@@ -181,6 +172,7 @@
                 <element signature="e#52256#52339#0" />
                 <element signature="e#52700#53663#0" />
                 <element signature="e#53759#56760#0" />
+                <element signature="e#57019#59140#0" />
               </folding>
             </state>
           </provider>
@@ -208,6 +200,9 @@
       <find>params</find>
       <find>MSE</find>
       <find>to_emb</find>
+      <find>step</find>
+      <find>sgd</find>
+      <find>mean</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -218,8 +213,8 @@
       <list>
         <option value="$PROJECT_DIR$/timeseries_tests.py" />
         <option value="$PROJECT_DIR$/ml_helper.py" />
-        <option value="$PROJECT_DIR$/tests.py" />
         <option value="$PROJECT_DIR$/references.py" />
+        <option value="$PROJECT_DIR$/tests.py" />
       </list>
     </option>
   </component>
@@ -244,6 +239,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -255,7 +251,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -380,15 +375,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49094567" visible="true" weight="0.24918033" />
-      <window_info id="Structure" order="1" sideWeight="0.5090543" side_tool="true" visible="true" weight="0.24918033" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48920086" visible="true" weight="0.24918033" />
+      <window_info id="Structure" order="1" sideWeight="0.5107991" side_tool="true" visible="true" weight="0.24918033" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32721382" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.46328294" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.54211664" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
@@ -428,11 +422,6 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="PythonConfigurationType">
-        <watch expression="m2[0].weight.sub(m1[0].weight).abs().mean().data.cpu().item()" language="Python" />
-      </configuration>
-    </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="breakpointCondition">
@@ -449,47 +438,52 @@
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>m2[0].weight.sub(m1[0].weight).abs().mean().data.cpu().item()</expression-string>
+        <expression-string>out[0][0].mean(dim=0).shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0].weight.sub(m1[0].weight).abs().mean()</expression-string>
+        <expression-string>out[0][0].mean(dim=0)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0].weight.sub(m1[0].weight).abs()</expression-string>
+        <expression-string>out[0][0].mean()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0].weight.sub(m1[0].weight)</expression-string>
+        <expression-string>out[0][0].mean(axis=1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0].weight.sub</expression-string>
+        <expression-string>out[0][0].mean(axis=0)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>t.nn.Linear(15,3).weight.shape</expression-string>
+        <expression-string>out[0][0]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>t.nn.Linear(15,3).shape</expression-string>
+        <expression-string>out[0][0].shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0].weight</expression-string>
+        <expression-string>[x[0].shape for x in out]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>m2[0]</expression-string>
+        <expression-string>[x[0] for x in out]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>t.stack([x[0] for x in out])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -575,19 +569,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="373" selection-start-line="373" selection-end-line="373" />
+        <state relative-caret-position="342">
+          <caret line="533" column="4" selection-start-line="533" selection-start-column="4" selection-end-line="533" selection-end-column="4" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
             <element signature="e#7813#13639#0" />
+            <element signature="e#22823#23164#0" />
+            <element signature="e#23501#24716#0" />
+            <element signature="e#23932#24491#0" />
+            <element signature="e#23973#24491#0" />
+            <element signature="e#24107#24491#0" />
+            <element signature="e#24187#24318#0" />
+            <element signature="e#24396#24491#0" />
+            <element signature="e#24778#26124#0" />
+            <element signature="e#24886#25922#0" />
+            <element signature="e#25126#25173#0" />
+            <element signature="e#25208#25253#0" />
+            <element signature="e#25340#25899#0" />
+            <element signature="e#25381#25899#0" />
+            <element signature="e#25515#25899#0" />
+            <element signature="e#25595#25726#0" />
+            <element signature="e#25804#25899#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/references.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1405">
-          <caret line="1651" column="10" selection-start-line="1651" selection-start-column="10" selection-end-line="1651" selection-end-column="10" />
+        <state relative-caret-position="1650">
+          <caret line="1368" column="23" selection-start-line="1368" selection-start-column="19" selection-end-line="1368" selection-end-column="23" />
           <folding>
             <element signature="e#101#428#1" />
             <element signature="e#501#3033#0" />
@@ -701,10 +711,8 @@
             <element signature="e#36716#37047#0" />
             <element signature="e#36754#36980#0" />
             <element signature="e#36790#36898#0" />
-            <element signature="e#37234#52602#0" />
             <element signature="e#37234#37290#0" />
             <element signature="e#45959#46300#0" />
-            <element signature="e#46344#46597#0" />
             <element signature="e#46637#47852#0" />
             <element signature="e#46745#47650#0" />
             <element signature="e#47068#47627#0" />
@@ -722,14 +730,8 @@
             <element signature="e#48731#48862#0" />
             <element signature="e#48940#49035#0" />
             <element signature="e#49302#49345#0" />
-            <element signature="e#49442#50265#0" />
-            <element signature="e#49583#50250#0" />
             <element signature="e#49812#49879#0" />
-            <element signature="e#50297#51134#0" />
             <element signature="e#50461#50565#0" />
-            <element signature="e#50646#50741#0" />
-            <element signature="e#50818#51002#0" />
-            <element signature="e#50851#50929#0" />
             <element signature="e#51167#52549#0" />
             <element signature="e#51725#51911#0" />
             <element signature="e#51997#52146#0" />
@@ -737,6 +739,7 @@
             <element signature="e#52256#52339#0" />
             <element signature="e#52700#53663#0" />
             <element signature="e#53759#56760#0" />
+            <element signature="e#57019#59140#0" />
           </folding>
         </state>
       </provider>
