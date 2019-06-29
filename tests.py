@@ -7,6 +7,7 @@ import ml_helper
 from sklearn import tree
 from sklearn.metrics import accuracy_score
 import datetime as dt
+import pickle
 
 tdevice = t.device('cuda')
 
@@ -531,7 +532,7 @@ def autoencoder_auc_roc_test():
     #     Validating against noise at  1
     #         Good mean: 0.00048249828978441656      Good max: 0.005267511587589979    Good min: 1.6914469824769185e-11
     #         Bad mean: 0.0028613535687327385      Bad max: 0.02369607985019684    Bad min: 2.6478019776732253e-10
-    
+
     data_count = 700
     max_time_len = 600
     min_time_len = 300
@@ -736,5 +737,241 @@ def autoencoder_auc_roc_test():
     return
 
 
+# ae clustering for muliple distributions
+def multi_ae_clustering_test():
+    data_count = 300
+    max_time_len = 50
+    min_time_len = 1
+
+    tanh_scale = 0.03
+
+    data = []
+    s = list('0123456789')
+    emb_size = 20
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def create_pattern_distribution():
+        events = np.power(np.random.rand(10, 10), 3)
+        times = 10 * np.random.rand(10, 10)
+        return events, times
+
+    def to_emb(x):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in x[0]]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        time = t.tensor(x[1], dtype=t.float32, device=tdevice)
+        f = []
+        for i in range(len(x[0])):
+            f.append(t.cat([a[i], time[i].unsqueeze(0)]))
+        f = t.stack(f)
+        return f
+
+    # the original 'healthy' data contains 2 types of distribution
+    A, B = create_pattern_distribution(), create_pattern_distribution()
+
+    # C shall be the 'unhealthy' distribution
+    C = create_pattern_distribution()
+
+    save('data_generators', [A, B, C])
+
+    def _h(fp, op, verbose=True):
+        out = [fp(x) for x in data]
+        _y = t.stack([x[0] for x in out])
+        y = t.stack([x[1] for x in out])
+
+        loss = t.nn.MSELoss()(_y, y)
+
+        loss.backward()
+        op.step()
+        op.zero_grad()
+
+        return loss.data.cpu().item()
+
+    def gen_data_sets(pt_list, cum_p):
+        '''
+
+        :param pt_list: [a,b,c] 3 types of distributions
+        :param cum_p: [0.5 0.7, 1] cumulative probabilities of sampling a particular distribution
+        :return:
+        '''
+        xs = [np.random.choice(s)]
+        xt = [0]
+        curr = 0
+        while curr < max_time_len:
+            np.random.seed(dt.datetime.now().microsecond)
+            if curr > len(xt) - 1:
+                return gen_data_sets(pt_list, cum_p)
+            ct = xt[curr]
+            cl = int(xs[curr])
+
+            rng = np.random.rand()
+            for i, v in enumerate(cum_p):
+                if rng <= v:
+                    dist_p, dist_time = pt_list[i]
+                    break
+
+            xpp = dist_p[cl]
+            xpt = dist_time[cl]
+            ch = np.random.rand(10)
+
+            for ii in range(10):
+                if ch[ii] < xpp[ii]:
+                    nextl = str(ii)
+                    nextt = ct + xpt[ii]
+                    for ttt in range(curr, len(xt)):
+                        tt = xt[ttt]
+                        if nextt < tt:
+                            xt = xt[:ttt] + [nextt] + xt[ttt:]
+                            xs = xs[:ttt] + [nextl] + xs[ttt:]
+                            break
+                        elif ttt == len(xt) - 1:
+                            xt.append(nextt)
+                            xs.append(nextl)
+                            break
+
+            curr += 1
+        end = np.random.randint(min_time_len, max_time_len)
+        last_time = xt[:end][-1]
+        xt = np.tanh(tanh_scale * (np.asarray(xt[:end]) - last_time))
+        return [''.join(xs[:end]), xt]
+
+    def healthy_data():
+        return gen_data_sets([A], [1]) if np.random.rand() < 0.6 else gen_data_sets([B], [1])
+
+    def unhealthy_data(noise):
+        h = 1 - noise
+        return gen_data_sets([A, C], [h, 1]) if np.random.rand() < 0.6 else gen_data_sets([B, C], [h, 1])
+
+    for i in range(data_count):
+        data.append(healthy_data())
+
+    data = [to_emb(x) for x in data]
+
+    def test(fp, mean, std):  # validation set has no noise
+        test_count = 100
+
+        for noise in [0, 0.005, 0.01, 0.03, 0.05, 0.07, 0.09, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
+            print('Validating against noise at ', noise)
+            a = [healthy_data() for x in range(test_count)]
+            b = [unhealthy_data(noise) for x in range(test_count)]
+
+            def _f(fp, d):
+                _y, y = fp(to_emb(d))
+                return t.pow(t.sub(_y, y), 2)
+
+            ra = t.stack([_f(fp, x) for x in a])
+            rb = t.stack([_f(fp, x) for x in b])
+
+            _ = lambda x: np.abs((x.data.cpu().item() - mean) / std)
+            print('     Good mean:', _(t.mean(ra)), '     Good max:', _(t.max(ra)), '   Good min:', _(t.min(ra)))
+            print('     Bad mean:', _(t.mean(rb)), '     Bad max:', _(t.max(rb)), '   Bad min:', _(t.min(rb)))
+        return
+
+    def create_ae():
+        neck = 3
+        w1 = t.nn.Linear((emb_size + 1) * 2, neck)
+        w1.to(tdevice)
+
+        w2 = t.nn.Linear(neck, (emb_size + 1) * 2)
+        w2.to(tdevice)
+
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        optim = t.optim.SGD(params, lr=0.02)
+        return w1, w2, optim
+
+    def ann_focus_concat_test(xx):
+
+        w1, w2, optim = create_ae()
+
+        def fprop(x):
+            o1 = x.mean(dim=0)
+            focus = x[-1]
+            o1 = t.cat([o1, focus])
+            o = w1(o1).tanh()
+            o = w2(o)
+            return o, o1
+
+        time_a = dt.datetime.now()
+        losses = []
+        for i in range(xx):
+            loss = _h(fprop, optim, verbose=True)
+            losses.append(loss)
+            if i % 100 == 0:
+                print(i, ' Loss:', loss)
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+        losses = np.asarray(losses[-100:])
+        print(np.histogram(losses, bins=10)[0])
+        r = test(fprop, losses.mean(), losses.std())
+        return
+
+    def ann_focus_concat_with_clustering_test(xx):
+        ae_set = []
+        while True:
+            w1, w2, optim = create_ae()
+            ae_set.append([w1, w2, optim])
+
+            def fprop(x):
+                o1 = x.mean(dim=0)
+                focus = x[-1]
+                o1 = t.cat([o1, focus])
+                o = w1(o1).tanh()
+                o = w2(o)
+                return o, o1
+
+            losses, cnt = [], 0
+            while True:
+                cnt += 1
+                loss = _h(fprop, optim, verbose=True)
+                losses.append(loss)
+                if len(losses) > 1000:
+                    losses.pop(0)
+                if cnt % 100 == 0:
+                    print(cnt, ' Loss:', loss)
+                if len(losses) >= 1000 and cnt % 100 == 0:
+                    l = np.asarray(losses)
+                    if l[50:].mean() > l[:50].mean():
+                        print(np.histogram(l, bins=10)[0])
+                        break
+
+            losses = np.asarray(losses)
+            mn, std = np.histogram(losses)
+
+            def _x(d):
+                _y, y = fprop(d)
+                loss = t.nn.MSELoss()(_y, y)
+                return loss.data.cpu().item()
+
+            ldata = [[_x(d), d] for d in data]
+            new_data = []
+            for d in ldata:
+                if np.abs(d[0] - mn) / std > 3:
+                    new_data.append(d[1])
+            if len(new_data) == 0:
+                save('asd', ae_set)
+                break
+            else:
+                data = new_data
+
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+        losses = np.asarray(losses[-100:])
+        print(np.histogram(losses, bins=10)[0])
+        r = test(fprop, losses.mean(), losses.std())
+        return
+
+    # ann_focus_concat_test(2000)
+    ann_focus_concat_with_clustering_test(2000)
+    return
+
+
+def save(path, obj):
+    with open(path, 'wb') as f:
+        pickle.dump(obj, f)
+    return
+
+
 if __name__ == '__main__':
-    autoencoder_auc_roc_test()
+    multi_ae_clustering_test()

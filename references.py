@@ -1652,3 +1652,347 @@ def models_similarity_test_on_same_data():
         if i % 1000 == 0:
             print('i:', i, '  loss:', l, '   |m1-m2|:', d)
     return
+
+
+# tests for current mean-aggregated with context vs current concat mean-aggreg context
+def anomaly_detection_context_focus_concat_test():
+    '''
+    Conclusion, DO NOT MEAN AGGREGRATE EVERYTHING! Only the context can be aggregated, but the subject of interest
+    should not be mean-aggregated together with the context!
+    '''
+    # focus concat mean-agg context
+    # Finished training in  0:10:22.953199
+    # [1227  201  127   97   82   71   65   58   47   25]
+    # Validating against noise at  0
+    #      Good mean: 0.3243067777586217      Good max: 7802.138167432821    Good min: 551.3168886407906
+    #      Bad mean: 7.824828706017395      Bad max: 7813.743710886022    Bad min: 551.3169860512105
+    # Validating against noise at  0.005
+    #      Good mean: 5.365242796623158      Good max: 7607.618711838109    Good min: 551.3169891065706
+    #      Bad mean: 11.528002904637805      Bad max: 7913.228445697616    Bad min: 551.3169581264842
+    # Validating against noise at  0.01
+    #      Good mean: 9.372809305382926      Good max: 7441.085158725415    Good min: 551.3169891439716
+    #      Bad mean: 0.6182216186353824      Bad max: 7417.02423264549    Bad min: 551.316987235395
+    # Validating against noise at  0.03
+    #      Good mean: 0.899010518852587      Good max: 7802.138167432821    Good min: 551.3169065602049
+    #      Bad mean: 18.460085745299182      Bad max: 7813.743710886022    Bad min: 551.3169865086263
+    # Validating against noise at  0.05
+    #      Good mean: 17.328082503719617      Good max: 7779.385178765844    Good min: 551.3169865086263
+    #      Bad mean: 23.663095116819488      Bad max: 9904.13911044557    Bad min: 551.3169884566508
+    # Validating against noise at  0.07
+    #      Good mean: 3.587099846435576      Good max: 7465.661809125709    Good min: 551.3169194224749
+    #      Bad mean: 35.377378693721866      Bad max: 9875.805705233011    Bad min: 551.3169858857685
+    # Validating against noise at  0.09
+    #      Good mean: 11.443964869927406      Good max: 7730.669021266156    Good min: 551.3169521499113
+    #      Bad mean: 31.4900920768926      Bad max: 10072.095271051476    Bad min: 551.3169890520131
+    # Validating against noise at  0.1
+    #      Good mean: 12.309993188663796      Good max: 7802.138167432821    Good min: 551.3169892181317
+    #      Bad mean: 14.52783332288461      Bad max: 9989.910002155679    Bad min: 551.3167429338652
+    # Validating against noise at  0.2
+    #      Good mean: 16.89912472568052      Good max: 7551.5409680181965    Good min: 551.3169766954886
+    #      Bad mean: 62.506129601795024      Bad max: 10174.90834859882    Bad min: 551.3168380585937
+    # Validating against noise at  0.3
+    #      Good mean: 18.32264172143083      Good max: 7490.400860299574    Good min: 551.3169890413445
+    #      Bad mean: 61.93139675661975      Bad max: 10216.507394061078    Bad min: 551.3169843560935
+    # Validating against noise at  0.4
+    #      Good mean: 34.58468538380335      Good max: 7607.566324491796    Good min: 551.3169888986102
+    #      Bad mean: 108.25003280025379      Bad max: 10256.89687390513    Bad min: 551.3169625556358
+    # Validating against noise at  0.5
+    #      Good mean: 13.950954051714566      Good max: 7563.455596814644    Good min: 551.316806673151
+    #      Bad mean: 193.8886464609211      Bad max: 10330.064534255587    Bad min: 551.3169866709978
+    # Validating against noise at  0.6
+    #      Good mean: 35.107401959702      Good max: 7670.849656756246    Good min: 551.3169762792209
+    #      Bad mean: 197.86862957664306      Bad max: 10509.087230729296    Bad min: 551.3168591818096
+    # Validating against noise at  0.7
+    #      Good mean: 4.692974899041569      Good max: 7528.74723363742    Good min: 551.316967468415
+    #      Bad mean: 239.72961177046528      Bad max: 10843.007668617962    Bad min: 551.3169874967334
+    # Validating against noise at  0.8
+    #      Good mean: 17.17670490093608      Good max: 7809.510813303934    Good min: 551.3169634514373
+    #      Bad mean: 267.73777887466593      Bad max: 10488.476884526519    Bad min: 551.3169877901123
+    # Validating against noise at  0.9
+    #      Good mean: 22.55179215305387      Good max: 7867.45878538722    Good min: 551.3169681239899
+    #      Bad mean: 305.6593781461588      Bad max: 10604.498558324243    Bad min: 551.3169829422123
+    # Validating against noise at  1
+    #      Good mean: 13.098568271080515      Good max: 7874.247603387756    Good min: 551.3169845020891
+    #      Bad mean: 360.15851659717373      Bad max: 10565.437388750037    Bad min: 551.3168308042646
+    #
+    # focus being mean-agg with context
+    # Finished training in  0:09:07.148683
+    # [1619  108   65   49   38   33   28   24   20   16]
+    # Validating against noise at  0
+    #      Good mean: 0.45261300851675834      Good max: 3.233966311950346    Good min: 0.5095926808743774
+    #      Bad mean: 0.4565816772720046      Bad max: 2.9986092847208656    Bad min: 0.5095926792483044
+    # Validating against noise at  0.005
+    #      Good mean: 0.4368865626502712      Good max: 5.314683158413496    Good min: 0.5095926790182436
+    #      Bad mean: 0.41507603381643865      Bad max: 4.483771411423884    Bad min: 0.5095925840511724
+    # Validating against noise at  0.01
+    #      Good mean: 0.45881354100695804      Good max: 1.8344153028320291    Good min: 0.5095926697370133
+    #      Bad mean: 0.4621457432786258      Bad max: 1.0452505069274853    Bad min: 0.5095926844867767
+    # Validating against noise at  0.03
+    #      Good mean: 0.4336032113078854      Good max: 5.855115803914694    Good min: 0.5095926887331488
+    #      Bad mean: 0.43687897441611606      Bad max: 5.314683158413496    Bad min: 0.5095926843668906
+    # Validating against noise at  0.05
+    #      Good mean: 0.43155070542946955      Good max: 4.512600352420551    Good min: 0.5095926819454436
+    #      Bad mean: 0.42790714034423405      Bad max: 5.855115803914694    Bad min: 0.5095926842802373
+    # Validating against noise at  0.07
+    #      Good mean: 0.39854189577146815      Good max: 5.855115803914694    Good min: 0.5095926817614859
+    #      Bad mean: 0.4457864779177134      Bad max: 2.36096363770555    Bad min: 0.5095926774140933
+    # Validating against noise at  0.09
+    #      Good mean: 0.4534239910106392      Good max: 2.319882239848848    Good min: 0.5095926886834018
+    #      Bad mean: 0.4271638768213182      Bad max: 2.9986092847208656    Bad min: 0.5095926876240537
+    # Validating against noise at  0.1
+    #      Good mean: 0.43412781598479394      Good max: 5.855115803914694    Good min: 0.5095926887026713
+    #      Bad mean: 0.4405837625515386      Bad max: 4.09579910551878    Bad min: 0.5095926710440251
+    # Validating against noise at  0.2
+    #      Good mean: 0.43044145896570357      Good max: 5.314683158413496    Good min: 0.5095926612639979
+    #      Bad mean: 0.44319089166183745      Bad max: 2.479944581207054    Bad min: 0.5095926860445985
+    # Validating against noise at  0.3
+    #      Good mean: 0.4401460391431266      Good max: 5.855115803914694    Good min: 0.5095924952417963
+    #      Bad mean: 0.43244556421545416      Bad max: 6.6991679827468396    Bad min: 0.5095926247291193
+    # Validating against noise at  0.4
+    #      Good mean: 0.40673646639466043      Good max: 5.314683158413496    Good min: 0.5095926691938779
+    #      Bad mean: 0.40456782754134857      Bad max: 5.855115803914694    Bad min: 0.509592667556529
+    # Validating against noise at  0.5
+    #      Good mean: 0.4568671634045874      Good max: 5.855115803914694    Good min: 0.5095926882756292
+    #      Bad mean: 0.4363014482706873      Bad max: 1.8640193672348502    Bad min: 0.5095926855055959
+    # Validating against noise at  0.6
+    #      Good mean: 0.4237383107356418      Good max: 2.9986092847208656    Good min: 0.5095926860445985
+    #      Bad mean: 0.4096642585867101      Bad max: 5.845047331796315    Bad min: 0.5095924540139108
+    # Validating against noise at  0.7
+    #      Good mean: 0.4232196357599238      Good max: 5.063177370215368    Good min: 0.5095926706252316
+    #      Bad mean: 0.40771053350496944      Bad max: 4.278039706353073    Bad min: 0.5095922725166427
+    # Validating against noise at  0.8
+    #      Good mean: 0.45702973976091354      Good max: 2.9986092847208656    Good min: 0.5095925617974486
+    #      Bad mean: 0.41587863893547966      Bad max: 2.1530282595017605    Bad min: 0.5095926844356011
+    # Validating against noise at  0.9
+    #      Good mean: 0.46134392284184766      Good max: 3.3938728582120086    Good min: 0.5095926880718961
+    #      Bad mean: 0.38406579204812874      Bad max: 10.155725308397205    Bad min: 0.5095926844867767
+    # Validating against noise at  1
+    #      Good mean: 0.45299363291528494      Good max: 5.855115803914694    Good min: 0.5095926826159485
+    #      Bad mean: 0.3964183137303607      Bad max: 5.795901112311945    Bad min: 0.5095926879079945
+
+    data_count = 1000
+    max_time_len = 80
+    min_time_len = 1
+
+    tanh_scale = 0.03
+
+    data = []
+
+    emb_size = 20
+
+    # pattern A
+    ap = np.power(np.random.rand(10, 10), 3)
+    at = 10 * np.random.rand(10, 10)
+    af = [0, 1, 2, 3, 4]
+
+    bp = np.power(np.random.rand(10, 10), 3)
+    bt = 10 * np.random.rand(10, 10)
+    bf = [5, 6, 7, 8, 9]
+
+    s = list('0123456789')
+
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(x):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in x[0]]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        time = t.tensor(x[1], dtype=t.float32, device=tdevice)
+        f = []
+        for i in range(len(x[0])):
+            f.append(t.cat([a[i], time[i].unsqueeze(0)]))
+        f = t.stack(f)
+        return f
+
+    def _h(fp, op, verbose=True):
+        out = [fp(x) for x in data]
+        _y = t.stack([x[0] for x in out])
+        y = t.stack([x[1] for x in out])
+
+        loss = t.nn.MSELoss()(_y, y)
+
+        loss.backward()
+        op.step()
+        op.zero_grad()
+
+        return loss.data.cpu().item()
+
+    def gen_data(prop, time):
+        xs = [np.random.choice(s)]
+        xt = [0]
+        curr = 0
+        while curr < max_time_len:
+            np.random.seed(dt.datetime.now().microsecond)
+            if curr > len(xt) - 1:
+                return gen_data(prop, time)
+            ct = xt[curr]
+            cl = int(xs[curr])
+
+            xpp = prop[cl]
+            xpt = time[cl]
+            ch = np.random.rand(10)
+
+            for ii in range(10):
+                if ch[ii] < xpp[ii]:
+                    nextl = str(ii)
+                    nextt = ct + xpt[ii]
+                    for ttt in range(curr, len(xt)):
+                        tt = xt[ttt]
+                        if nextt < tt:
+                            xt = xt[:ttt] + [nextt] + xt[ttt:]
+                            xs = xs[:ttt] + [nextl] + xs[ttt:]
+                            break
+                        elif ttt == len(xt) - 1:
+                            xt.append(nextt)
+                            xs.append(nextl)
+                            break
+
+            curr += 1
+        end = np.random.randint(min_time_len, max_time_len)
+        last_time = xt[:end][-1]
+        xt = np.tanh(tanh_scale * (np.asarray(xt[:end]) - last_time))
+        focus = str(np.random.choice(af))
+        d = xs[:end - 1] + [focus]
+        return [''.join(d), xt]
+
+    def gen_data2(prop, time, prop2, time2, noise):
+        xs = [np.random.choice(s)]
+        xt = [0]
+        curr = 0
+        while curr < max_time_len:
+            np.random.seed(dt.datetime.now().microsecond)
+            if curr > len(xt) - 1:
+                return gen_data(prop, time)
+            ct = xt[curr]
+            cl = int(xs[curr])
+
+            if np.random.rand() < noise:
+                xpp = prop2[cl]
+                xpt = time2[cl]
+            else:
+                xpp = prop[cl]
+                xpt = time[cl]
+            ch = np.random.rand(10)
+
+            for ii in range(10):
+                if ch[ii] < xpp[ii]:
+                    nextl = str(ii)
+                    nextt = ct + xpt[ii]
+                    for ttt in range(curr, len(xt)):
+                        tt = xt[ttt]
+                        if nextt < tt:
+                            xt = xt[:ttt] + [nextt] + xt[ttt:]
+                            xs = xs[:ttt] + [nextl] + xs[ttt:]
+                            break
+                        elif ttt == len(xt) - 1:
+                            xt.append(nextt)
+                            xs.append(nextl)
+                            break
+
+            curr += 1
+        end = np.random.randint(min_time_len, max_time_len)
+        last_time = xt[:end][-1]
+        xt = np.tanh(tanh_scale * (np.asarray(xt[:end]) - last_time))
+        focus = str(np.random.choice(bf)) if np.random.rand() < noise else str(np.random.choice(af))
+        d = xs[:end - 1] + [focus]
+        return [''.join(d), xt]
+
+    for i in range(data_count):
+        d = gen_data(ap, at)
+        data.append(d)
+
+    data = [to_emb(x) for x in data]
+
+    def test(fp, mean, std):  # validation set has no noise
+        test_count = 100
+
+        for noise in [0, 0.005, 0.01, 0.03, 0.05, 0.07, 0.09, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
+            print('Validating against noise at ', noise)
+            a = [gen_data(ap, at) for x in range(test_count)]
+            b = [gen_data2(ap, at, bp, bt, noise) for x in range(test_count)]
+
+            def _f(fp, d):
+                _y, y = fp(to_emb(d))
+                return t.pow(t.sub(_y, y), 2)
+
+            ra = t.stack([_f(fp, x) for x in a])
+            rb = t.stack([_f(fp, x) for x in b])
+
+            _ = lambda x: np.abs((x.data.cpu().item() - mean) / std)
+            print('     Good mean:', _(t.mean(ra)), '     Good max:', _(t.max(ra)), '   Good min:', _(t.min(ra)))
+            print('     Bad mean:', _(t.mean(rb)), '     Bad max:', _(t.max(rb)), '   Bad min:', _(t.min(rb)))
+        return
+
+    def ann_focus_concat_test(xx):
+        neck = 3
+        w1 = t.nn.Linear((emb_size + 1) * 2, neck)
+        w1.to(tdevice)
+
+        w2 = t.nn.Linear(neck, (emb_size + 1) * 2)
+        w2.to(tdevice)
+
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        optim = t.optim.SGD(params, lr=0.02)
+
+        def fprop(x):
+            o1 = x.mean(dim=0)
+            focus = x[-1]
+            o1 = t.cat([o1, focus])
+            o = w1(o1).tanh()
+            o = w2(o)
+            return o, o1
+
+        losses = []
+        time_a = dt.datetime.now()
+        for i in range(xx):
+            loss = _h(fprop, optim, verbose=True)
+            if i % 100 == 0:
+                print(i, ' Loss:', loss)
+            losses.append(loss)
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+        print(np.histogram(losses)[0])
+        losses = np.asarray(losses[-100:])
+        r = test(fprop, losses.mean(), losses.std())
+        return
+
+    def ann_mean_agg_test(xx):
+        neck = 3
+        w1 = t.nn.Linear(emb_size + 1, neck)
+        w1.to(tdevice)
+
+        w2 = t.nn.Linear(neck, emb_size + 1)
+        w2.to(tdevice)
+
+        params = [
+            {'params': list(w1.parameters())},
+            {'params': list(w2.parameters())}
+        ]
+        optim = t.optim.SGD(params, lr=0.02)
+
+        def fprop(x):
+            o1 = x.mean(dim=0)
+            o = w1(o1).tanh()
+            o = w2(o)
+            return o, o1
+
+        time_a = dt.datetime.now()
+        losses = []
+        for i in range(xx):
+            loss = _h(fprop, optim, verbose=False)
+            losses.append(loss)
+            if i % 100 == 0:
+                print(i, ' Loss:', loss)
+
+        time_b = dt.datetime.now()
+        print('Finished training in ', (time_b - time_a))
+        print(np.histogram(losses)[0])
+        losses = np.asarray(losses)
+        r = test(fprop, losses.mean(), losses.std())
+        return
+
+    ann_focus_concat_test(2000)
+    ann_mean_agg_test(2000)
+    return
