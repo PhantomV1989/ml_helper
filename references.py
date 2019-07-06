@@ -1996,3 +1996,179 @@ def anomaly_detection_context_focus_concat_test():
     ann_focus_concat_test(2000)
     ann_mean_agg_test(2000)
     return
+
+
+# use neck distribution, train for separation of nonlinear differences, use kmeans max separation for auto clustering
+def neck_vs_loss_ae_clustering():
+    import matplotlib.pyplot as plt
+    from sklearn.cluster import KMeans
+
+    '''
+    Neck clustering:
+        - only works after training, 
+        - aggregrates data if they are linear transform of each other, separates them of they are not
+        - lower no. of layers, more clustering
+
+    Loss clustering:
+        - works even without training, but can only work on clusters with linear differences
+    '''
+
+    tdevice = 'cpu'
+    feat = 100
+
+    p1 = lambda: np.concatenate([np.random.randn(70) + 1, np.random.randn(30) - 2])
+    p2 = lambda: np.concatenate([np.random.randn(30) - 2, np.random.randn(70) + 1])  # p2 is nonlinear transform of p1
+    p3 = lambda: np.concatenate([np.random.randn(50) - 1, np.random.randn(50) - 4])  # p3 is linear transform of p1
+
+
+    def cp(p, c):
+        px = [p() for i in range(c)]
+        tx = t.tensor(px, dtype=t.float32)
+        return tx
+
+
+    t1 = cp(p1, 100)
+    t2 = cp(p2, 30)
+    t3 = cp(p3, 30)
+    data = t.cat([t1, t2], dim=0)
+    print(data.shape)
+
+
+    def _h(fp, op):
+        out = [fp(x) for x in data]
+        _y = t.stack([x[0] for x in out])
+        y = t.stack([x[1] for x in out])
+
+        loss = t.nn.MSELoss()(_y, y)
+
+        loss.backward()
+        op.step()
+        op.zero_grad()
+
+        return loss.data.cpu().item()
+
+
+    def get_clusters(l):
+        c = 1
+        r2 = []
+        while True:
+            kmeans = KMeans(n_clusters=c, random_state=0).fit(X=l.reshape(-1, 1))
+            r2.append([c, get_rel_mean_cluster_separation(kmeans, l), kmeans])
+            c += 1
+        return
+
+
+    def get_rel_mean_cluster_separation(kmobj, data):
+        o = kmobj.predict(data.reshape(-1, 1))
+        d = {}
+        for i, v in enumerate(o):
+            label = v
+            value = data[i]
+            if not d.__contains__(label):
+                d[label] = [value]
+            else:
+                d[label].append(value)
+        _c = np.random.choice
+        separation = []
+        for k in d:
+            nk = list(filter(lambda x: x != k, d))
+            if len(nk) == 0:
+                break
+            for i in range(200):
+                separation.append(np.abs(_c(d[k]) - _c(d[_c(nk)])))
+        separation = np.min(separation) / (data.max() - data.min()) if len(separation) > 0 else 0
+        return separation
+
+
+    class AE:
+        @staticmethod
+        def run(layers, cycle, neck=1, act=lambda x: t.mul(x, 1)):
+            en, de, tp = AE.create_autoencoder(feat, neck_size=neck, layers=layers)
+            op = t.optim.SGD(tp, lr=0.1)
+
+            def _(d):
+                _y = AE.fprop_ae(x_input=d, encoders=en, decoders=de, act=act)  # , act=t.sigmoid)
+                y = d
+                return _y, y
+
+            def _1(d):
+                n = AE.fprop_ae(x_input=d, encoders=en, act=act)
+                return n
+
+            for i in range(cycle):
+                l = _h(_, op)
+                # print(layers, '  ', i, '   ', l)
+
+            def get_loss_dist(data):
+                r = []
+                for d in data:
+                    _y, y = _(d)
+                    r.append(t.nn.MSELoss()(_y.unsqueeze(0), y.unsqueeze(0)).data.cpu().item())
+                l = np.asarray(r)
+                c, b = np.histogram(l, bins=40)
+                print(c)
+                print(l.mean(), l.std())
+                plt.plot(c, label=cycle)
+                plt.show()
+
+                # get_clusters(l)
+
+                return l
+
+            def get_neck_dist(data):
+                r = []
+                for d in data:
+                    n = AE.fprop_ae(x_input=d, encoders=en, act=act)
+                    r.append(n.data.cpu().item())
+                l = np.asarray(r)
+                c, b = np.histogram(l, bins=40)
+                print(c)
+                print(l.mean(), l.std())
+                plt.plot(c, label=cycle)
+                plt.show()
+                get_clusters(l)
+                return l
+
+            get_neck_dist(data)
+            get_loss_dist(data)
+            return
+
+        @staticmethod
+        def create_autoencoder(input_size, neck_size, layers=1):
+            encoders = []
+            decoders = []
+            enc_out_sizes = [int(x) for x in np.linspace(input_size, neck_size, layers + 1)]
+            training_params = []
+
+            for i in range(layers):
+                in_ = enc_out_sizes[i]
+                out_ = enc_out_sizes[i + 1]
+                dense = t.nn.Linear(in_, out_)
+                dense.to(tdevice)
+                encoders.append(dense)
+                training_params.append({'params': list(dense.parameters())})
+
+            for i in range(layers, 0, -1):
+                in_ = enc_out_sizes[i]
+                out_ = enc_out_sizes[i - 1]
+                dense = t.nn.Linear(in_, out_)
+                dense.to(tdevice)
+                decoders.append(dense)
+                training_params.append({'params': list(dense.parameters())})
+
+            return encoders, decoders, training_params
+
+        @staticmethod
+        def fprop_ae(x_input, encoders=[], decoders=[], act=lambda x: t.mul(x, 1)):
+            if encoders:
+                for m in encoders:
+                    x_input = act(m(x_input))
+            if decoders:
+                for m in decoders:
+                    x_input = act(m(x_input))
+            return x_input
+
+
+    AE.run(layers=1, cycle=100, neck=1, act=t.sigmoid)
+
+    return

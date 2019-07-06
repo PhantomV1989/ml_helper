@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ml_helper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ml_helper.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ml_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ml_helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,56 +11,15 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FUSProjectUsageTrigger">
-    <session id="1451174365">
-      <usages-collector id="statistics.lifecycle.project">
-        <counts>
-          <entry key="project.closed" value="1" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.3" value="1" />
-          <entry key="project.open.time.4" value="1" />
-          <entry key="project.opened" value="3" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.edit">
-        <counts>
-          <entry key="py" value="1530" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.edit">
-        <counts>
-          <entry key="Python" value="1530" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.extensions.open">
-        <counts>
-          <entry key="py" value="1" />
-        </counts>
-      </usages-collector>
-      <usages-collector id="statistics.file.types.open">
-        <counts>
-          <entry key="Python" value="1" />
-        </counts>
-      </usages-collector>
-    </session>
-  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
+            <state relative-caret-position="13635">
               <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#54415#55225#0" />
-                <element signature="e#39403#39531#0" />
-                <element signature="e#55631#55788#0" />
-                <element signature="e#39779#40013#0" />
-                <element signature="e#40361#41069#0" />
-                <marker date="1561808541213" expanded="true" signature="39568:39597" ph="..." />
-                <marker date="1561808541213" expanded="true" signature="42310:42324" ph="..." />
-                <marker date="1561808541213" expanded="true" signature="42321:42324" ph="..." />
               </folding>
             </state>
           </provider>
@@ -73,11 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="629">
-              <caret line="1657" column="50" selection-start-line="1657" selection-start-column="50" selection-end-line="1657" selection-end-column="50" />
-              <folding>
-                <element signature="e#59441#75403#0" />
-              </folding>
+            <state relative-caret-position="-161">
+              <caret line="2000" column="117" selection-start-line="2000" selection-start-column="117" selection-end-line="2000" selection-end-column="117" />
             </state>
           </provider>
         </entry>
@@ -130,8 +82,8 @@
       <list>
         <option value="$PROJECT_DIR$/timeseries_tests.py" />
         <option value="$PROJECT_DIR$/ml_helper.py" />
-        <option value="$PROJECT_DIR$/references.py" />
         <option value="$PROJECT_DIR$/tests.py" />
+        <option value="$PROJECT_DIR$/references.py" />
       </list>
     </option>
   </component>
@@ -156,6 +108,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -167,7 +120,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -291,11 +243,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48091602" visible="true" weight="0.24808744" />
-      <window_info id="Structure" order="1" sideWeight="0.519084" side_tool="true" visible="true" weight="0.24808744" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48018292" visible="true" weight="0.24778761" />
+      <window_info id="Structure" order="1" sideWeight="0.51981705" side_tool="true" visible="true" weight="0.24778761" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32721382" />
@@ -312,9 +264,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
-  </component>
-  <component name="VcsContentAnnotationSettings">
-    <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -550,6 +499,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13635">
+          <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ml_helper.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -560,31 +519,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#54415#55225#0" />
-            <element signature="e#39403#39531#0" />
-            <element signature="e#55631#55788#0" />
-            <element signature="e#39779#40013#0" />
-            <element signature="e#40361#41069#0" />
-            <marker date="1561808541213" expanded="true" signature="39568:39597" ph="..." />
-            <marker date="1561808541213" expanded="true" signature="42310:42324" ph="..." />
-            <marker date="1561808541213" expanded="true" signature="42321:42324" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/references.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="1657" column="50" selection-start-line="1657" selection-start-column="50" selection-end-line="1657" selection-end-column="50" />
-          <folding>
-            <element signature="e#59441#75403#0" />
-          </folding>
+        <state relative-caret-position="-161">
+          <caret line="2000" column="117" selection-start-line="2000" selection-start-column="117" selection-end-line="2000" selection-end-column="117" />
         </state>
       </provider>
     </entry>
