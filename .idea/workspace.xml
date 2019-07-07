@@ -16,7 +16,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13635">
+            <state relative-caret-position="13500">
               <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
@@ -28,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-161">
-              <caret line="2000" column="117" selection-start-line="2000" selection-start-column="117" selection-end-line="2000" selection-end-column="117" />
+            <state relative-caret-position="170">
+              <caret line="2066" column="21" lean-forward="true" selection-start-line="2066" selection-start-column="21" selection-end-line="2066" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -108,7 +108,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -120,6 +119,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -246,8 +246,8 @@
     <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48018292" visible="true" weight="0.24778761" />
-      <window_info id="Structure" order="1" sideWeight="0.51981705" side_tool="true" visible="true" weight="0.24778761" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47865853" visible="true" weight="0.24778761" />
+      <window_info id="Structure" order="1" sideWeight="0.52134144" side_tool="true" visible="true" weight="0.24778761" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32721382" />
@@ -501,7 +501,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13635">
+        <state relative-caret-position="13500">
           <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
@@ -521,8 +521,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/references.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-161">
-          <caret line="2000" column="117" selection-start-line="2000" selection-start-column="117" selection-end-line="2000" selection-end-column="117" />
+        <state relative-caret-position="170">
+          <caret line="2066" column="21" lean-forward="true" selection-start-line="2066" selection-start-column="21" selection-end-line="2066" selection-end-column="21" />
         </state>
       </provider>
     </entry>

@@ -2000,6 +2000,15 @@ def anomaly_detection_context_focus_concat_test():
 
 # use neck distribution, train for separation of nonlinear differences, use kmeans max separation for auto clustering
 def neck_vs_loss_ae_clustering():
+    '''
+    Neck clustering:
+        - only works after training, 
+        - aggregrates data if they are linear transform of each other, separates them of they are not
+        - lower no. of layers, more clustering
+
+    Loss clustering:
+        - works even without training, but can only work on clusters with linear differences
+    '''
     import matplotlib.pyplot as plt
     from sklearn.cluster import KMeans
 
@@ -2019,20 +2028,20 @@ def neck_vs_loss_ae_clustering():
     p1 = lambda: np.concatenate([np.random.randn(70) + 1, np.random.randn(30) - 2])
     p2 = lambda: np.concatenate([np.random.randn(30) - 2, np.random.randn(70) + 1])  # p2 is nonlinear transform of p1
     p3 = lambda: np.concatenate([np.random.randn(50) - 1, np.random.randn(50) - 4])  # p3 is linear transform of p1
-
+    p4 = lambda: np.sin([i / 4 for i in range(100)]) + np.random.rand(
+        100) * 0.1  # p4 is another nonlinear transformation of p1
 
     def cp(p, c):
         px = [p() for i in range(c)]
         tx = t.tensor(px, dtype=t.float32)
         return tx
 
-
     t1 = cp(p1, 100)
     t2 = cp(p2, 30)
     t3 = cp(p3, 30)
-    data = t.cat([t1, t2], dim=0)
+    t4 = cp(p4, 40)
+    data = t.cat([t3, t2, t4], dim=0)  # t1,t2,t4 should give 3 different clusters most of the time
     print(data.shape)
-
 
     def _h(fp, op):
         out = [fp(x) for x in data]
@@ -2047,16 +2056,17 @@ def neck_vs_loss_ae_clustering():
 
         return loss.data.cpu().item()
 
-
-    def get_clusters(l):
-        c = 1
+    def get_clusters(l, separation=0.05):
         r2 = []
+        cluster_cnt = 2
         while True:
-            kmeans = KMeans(n_clusters=c, random_state=0).fit(X=l.reshape(-1, 1))
-            r2.append([c, get_rel_mean_cluster_separation(kmeans, l), kmeans])
-            c += 1
-        return
-
+            kmeans = KMeans(n_clusters=cluster_cnt, random_state=0).fit(X=l.reshape(-1, 1))
+            r2.append([cluster_cnt, get_rel_mean_cluster_separation(kmeans, l), kmeans])
+            if r2[-1][1] < separation:
+                r2.pop(-1)
+                break
+            cluster_cnt += 1
+        return r2[-1]
 
     def get_rel_mean_cluster_separation(kmobj, data):
         o = kmobj.predict(data.reshape(-1, 1))
@@ -2078,7 +2088,6 @@ def neck_vs_loss_ae_clustering():
                 separation.append(np.abs(_c(d[k]) - _c(d[_c(nk)])))
         separation = np.min(separation) / (data.max() - data.min()) if len(separation) > 0 else 0
         return separation
-
 
     class AE:
         @staticmethod
@@ -2126,7 +2135,7 @@ def neck_vs_loss_ae_clustering():
                 print(l.mean(), l.std())
                 plt.plot(c, label=cycle)
                 plt.show()
-                get_clusters(l)
+                cluster_cnt = get_clusters(l)
                 return l
 
             get_neck_dist(data)
@@ -2168,7 +2177,4 @@ def neck_vs_loss_ae_clustering():
                     x_input = act(m(x_input))
             return x_input
 
-
-    AE.run(layers=1, cycle=100, neck=1, act=t.sigmoid)
-
-    return
+    AE.run(layers=1, cycle=300, neck=1, act=t.sigmoid)
