@@ -1,6 +1,18 @@
-#import tensorflow as tf
+# import tensorflow as tf
 import torch as t
 import numpy as np
+
+
+def calculate_kmeans_l2_dist(dataset, kmeans):
+    clu = kmeans.predict(dataset)
+    result = []
+    for i in range(len(dataset)):
+        demb = dataset[i]
+        dclu = clu[i]
+        clu_center = kmeans.cluster_centers_[dclu]
+        dist = clu_center - demb
+        result.append([dclu, np.linalg.norm(dist)])
+    return result
 
 
 class SimpleNeuralNetworkModel:

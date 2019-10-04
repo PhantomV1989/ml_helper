@@ -2003,7 +2003,7 @@ def neck_vs_loss_ae_clustering():
     '''
     Neck clustering:
         - only works after training, 
-        - aggregrates data if they are linear transform of each other, separates them of they are not
+        - aggregrates data if they are linear transform(p1,p3) of each other, separates them of they are not
         - lower no. of layers, more clustering
 
     Loss clustering:
@@ -2027,7 +2027,7 @@ def neck_vs_loss_ae_clustering():
 
     p1 = lambda: np.concatenate([np.random.randn(70) + 1, np.random.randn(30) - 2])
     p2 = lambda: np.concatenate([np.random.randn(30) - 2, np.random.randn(70) + 1])  # p2 is nonlinear transform of p1
-    p3 = lambda: np.concatenate([np.random.randn(50) - 1, np.random.randn(50) - 4])  # p3 is linear transform of p1
+    p3 = lambda: np.concatenate([np.random.randn(50) - 1, np.random.randn(50) - 4])  # p3 is ~linear transform of p1
     p4 = lambda: np.sin([i / 4 for i in range(100)]) + np.random.rand(
         100) * 0.1  # p4 is another nonlinear transformation of p1
 
@@ -2178,3 +2178,305 @@ def neck_vs_loss_ae_clustering():
             return x_input
 
     AE.run(layers=1, cycle=300, neck=1, act=t.sigmoid)
+
+
+def lstm_soft_tokenizer_test1():
+    '''
+    using lstm as a soft tokenizer, this is a 2 token example, 0 and 1
+    [1, '81212345123']
+    [1, '454123451234']
+    [1, '5123451234']
+    [1, '531234512345123']
+    [1, '3451234542']
+    [1, '23453034']
+    [1, '123451234512']
+    [1, '4258121234512']
+    [0, '582765987659876598']
+    [0, '7987659876598']
+    [0, '7659876598765987659']
+    [0, '7659876598']
+    [0, '582765987659876598']
+    [1, '5987659876582765987']
+    [0, '876598765987659876']
+    [0, '87659876598']
+    :return:
+    '''
+    from sklearn.cluster import KMeans
+    dlen = 100
+    noise = 0.3
+    emb_size = 10
+
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(a):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        return a
+
+    def token_a():
+        pattern = '12345'
+        alter_pattern = '34'
+        new_token = ''
+        for p in pattern:
+            new_token += pattern
+            if np.random.rand() > 0.7:
+                new_token += np.random.choice(list(alter_pattern))
+        return new_token
+
+    def token_b():
+        pattern = '98765'
+        alter_pattern = '78'
+        new_token = ''
+        for p in pattern:
+            new_token += pattern
+            if np.random.rand() > 0.7:
+                new_token += np.random.choice(list(alter_pattern))
+        return new_token
+
+    def gen_string(gt):
+        dstring = ''
+        while len(dstring) <= dlen:
+            if np.random.rand() < noise:
+                dstring += str(np.random.randint(0, 100000))
+            dstring += gt()
+            # if np.random.rand() > 0.5:
+            #     dstring += token_a()
+            # else:
+            #     dstring += token_b()
+        return dstring[:dlen]
+
+    a = gen_string(token_a)
+    b = gen_string(token_b)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=4, batch_size=1,
+                                                   num_of_layers=1, device=tdevice)
+    raw_d = []
+    emb_data = []
+
+    for i in range(8):
+        sizee = np.random.randint(5, 20)
+        poss = np.min([np.random.randint(dlen), dlen - sizee])
+        sa = a[poss:np.min([poss + sizee, len(a) - 1])]
+        raw_d.append(sa)
+        semb = to_emb(sa)
+        out1, h1 = lstm(semb.unsqueeze(1), init)
+        emb_data.append(h1[1].squeeze())
+
+    for i in range(8):
+        sizee = np.random.randint(5, 20)
+        poss = np.min([np.random.randint(dlen), dlen - sizee])
+        sb = b[poss:np.min([poss + sizee, len(b) - 1])]
+        raw_d.append(sb)
+    emb_data = [to_emb(x) for x in raw_d]
+    emb_data = [lstm(x.unsqueeze(1), init)[1][1].squeeze() for x in emb_data]
+
+    emb_data = t.stack(emb_data)
+    emb_data = emb_data.cpu().data.numpy()
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(emb_data)
+    kmeansresult = kmeans.predict(emb_data)
+    result = []
+    for i in range(len(raw_d)):
+        result.append([kmeansresult[i], raw_d[i]])
+    return result
+
+
+def lstm_soft_tokenizer_test3_bprop():  # conclusion, use hpos 0, do not train!
+    '''
+    This test uses different levels of noise to see how it affects cluster distance
+
+    hpos 0
+    Trained:       hpos: 0      epoch: 0
+    Mean 0 dist: 0.085740454    Mean 1 dist: 0.08034747
+    Noise: 0  Mean 0 dist: 0.08337033    Mean 1 dist: 0.08020365
+    Noise: 0.3  Mean 0 dist: 0.083686255    Mean 1 dist: 0.079644
+    Noise: 0.6  Mean 0 dist: 0.08642816    Mean 1 dist: 0.08586879
+    Noise: 0.9  Mean 0 dist: 0.08821142    Mean 1 dist: 0.09035872
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 0      epoch: 50
+    Mean 0 dist: 0.097721    Mean 1 dist: 0.07404581
+    Noise: 0  Mean 0 dist: 0.10306854    Mean 1 dist: 0.07742782
+    Noise: 0.3  Mean 0 dist: 0.098747276    Mean 1 dist: 0.075664364
+    Noise: 0.6  Mean 0 dist: 0.100001805    Mean 1 dist: 0.078215666
+    Noise: 0.9  Mean 0 dist: 0.09953197    Mean 1 dist: 0.07350741
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 0      epoch: 100
+    Mean 0 dist: 0.07127062    Mean 1 dist: 0.04568113
+    Noise: 0  Mean 0 dist: 0.0789597    Mean 1 dist: 0.06558163
+    Noise: 0.3  Mean 0 dist: 0.09540307    Mean 1 dist: 0.066584796
+    Noise: 0.6  Mean 0 dist: 0.09451891    Mean 1 dist: 0.06918518
+    Noise: 0.9  Mean 0 dist: 0.09060608    Mean 1 dist: 0.07060514
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 0      epoch: 200
+    Mean 0 dist: 0.07298227    Mean 1 dist: 0.053299107
+    Noise: 0  Mean 0 dist: 0.074950665    Mean 1 dist: 0.0685109
+    Noise: 0.3  Mean 0 dist: 0.07969724    Mean 1 dist: 0.07138041
+    Noise: 0.6  Mean 0 dist: 0.07909531    Mean 1 dist: 0.068273015
+    Noise: 0.9  Mean 0 dist: 0.07962487    Mean 1 dist: 0.07284217
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 0      epoch: 400
+    Mean 0 dist: 0.043070335    Mean 1 dist: 0.07312809
+    Noise: 0  Mean 0 dist: 0.06168162    Mean 1 dist: 0.08479026
+    Noise: 0.3  Mean 0 dist: 0.07748585    Mean 1 dist: 0.08131081
+    Noise: 0.6  Mean 0 dist: 0.07637892    Mean 1 dist: 0.084395714
+    Noise: 0.9  Mean 0 dist: 0.078387454    Mean 1 dist: 0.08522397
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+    hpos 1
+    Trained:       hpos: 1      epoch: 0
+    Mean 0 dist: 0.11025281    Mean 1 dist: 0.20556316
+    Noise: 0  Mean 0 dist: 0.112020105    Mean 1 dist: 0.22835408
+    Noise: 0.3  Mean 0 dist: 0.14473037    Mean 1 dist: 0.23362632
+    Noise: 0.6  Mean 0 dist: 0.146825    Mean 1 dist: 0.2465113
+    Noise: 0.9  Mean 0 dist: 0.16124994    Mean 1 dist: 0.23776141
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 1      epoch: 50
+    Mean 0 dist: 0.026892697    Mean 1 dist: 0.2056124
+    Noise: 0  Mean 0 dist: 0.07063694    Mean 1 dist: 0.25189567
+    Noise: 0.3  Mean 0 dist: 0.099446036    Mean 1 dist: 0.2817078
+    Noise: 0.6  Mean 0 dist: 0.13513166    Mean 1 dist: 0.280791
+    Noise: 0.9  Mean 0 dist: 0.13856702    Mean 1 dist: 0.27545655
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 1      epoch: 100
+    Mean 0 dist: 0.13101763    Mean 1 dist: 0.15390229
+    Noise: 0  Mean 0 dist: 0.19830903    Mean 1 dist: 0.18540102
+    Noise: 0.3  Mean 0 dist: 0.25799206    Mean 1 dist: 0.20213817
+    Noise: 0.6  Mean 0 dist: 0.27620098    Mean 1 dist: 0.21329604
+    Noise: 0.9  Mean 0 dist: 0.30428806    Mean 1 dist: 0.21329749
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 1      epoch: 200
+    Mean 0 dist: 0.21384151    Mean 1 dist: 0.184044
+    Noise: 0  Mean 0 dist: 0.26144183    Mean 1 dist: 0.17323501
+    Noise: 0.3  Mean 0 dist: 0.26641637    Mean 1 dist: 0.16037549
+    Noise: 0.6  Mean 0 dist: 0.25684977    Mean 1 dist: 0.16037549
+    Noise: 0.9  Mean 0 dist: 0.26100856    Mean 1 dist: 0.18366113
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    Trained:       hpos: 1      epoch: 400
+    Mean 0 dist: 0.2137606    Mean 1 dist: 0.17700988
+    Noise: 0  Mean 0 dist: 0.2314634    Mean 1 dist: 0.18622921
+    Noise: 0.3  Mean 0 dist: 0.23173063    Mean 1 dist: 0.16729419
+    Noise: 0.6  Mean 0 dist: 0.2504138    Mean 1 dist: 0.16967341
+    Noise: 0.9  Mean 0 dist: 0.25338277    Mean 1 dist: 0.17086087
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    '''
+    from sklearn.cluster import KMeans
+    dlen = 100
+    noises = [0, 0.3, 0.6, 0.9]
+    emb_size = 10
+
+    emb = t.rand([10, emb_size], device=tdevice)
+
+    def to_emb(a):
+        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
+        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
+        return a
+
+    def token_a():
+        pattern = '112233'
+        alter_pattern = '34'
+        new_token = ''
+        for p in pattern:
+            new_token += p
+            if np.random.rand() > 0.7:
+                new_token += np.random.choice(list(alter_pattern))
+        return new_token
+
+    def token_b():
+        pattern = '332211'
+        alter_pattern = '56'
+        new_token = ''
+        for p in pattern:
+            new_token += p
+            if np.random.rand() > 0.7:
+                new_token += np.random.choice(list(alter_pattern))
+        return new_token
+
+    def gen_string(gt, noise):
+        dstring = ''
+        while len(dstring) <= dlen:
+            if np.random.rand() < noise:
+                dstring += str(np.random.randint(0, 100000))
+            dstring += gt()
+        return dstring[:dlen]
+
+    a = gen_string(token_a, 0)
+    b = gen_string(token_b, 0)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=emb_size, batch_size=1,
+                                                   num_of_layers=1,
+                                                   device=tdevice)
+
+    def __q(k, cnt):
+        raw_d = []
+        for i in range(cnt):
+            sizee = np.random.randint(7, 20)
+            poss = np.min([np.random.randint(dlen), dlen - sizee])
+            sa = k[poss:np.min([poss + sizee, len(a) - 1])]
+            raw_d.append(sa)
+        return raw_d
+
+    raw_d = []
+    raw_d += __q(a, 10)
+    raw_d += __q(b, 10)
+
+    for epoch in [0]:
+        for hpos in [0]:
+
+            # ~~~~~~~~start training~~~~~~~~~~~~~~~~
+            raw_x = [x[:-1] for x in raw_d]
+            raw_y = [x[1:] for x in raw_d]
+
+            emb_x = [to_emb(x) for x in raw_x]
+            emb_y = [to_emb(x) for x in raw_y]
+
+            op = t.optim.SGD(lstm.parameters(), lr=0.001)
+            for i in range(epoch):
+                _y = [lstm(x.unsqueeze(1), init)[0].squeeze() for x in emb_x]
+                y = emb_y
+
+                for ii in range(len(emb_x)):
+                    _yy = _y[ii]
+                    yy = y[ii]
+
+                    loss = t.nn.MSELoss()(_yy, yy)
+                    loss.backward(retain_graph=True)
+
+                op.step()
+                op.zero_grad()
+
+            # ~~~~~~~~~stop training~~~~~~~~~~~~~~~~
+            emb_data = [to_emb(x) for x in raw_d]
+            emb_data = [lstm(x.unsqueeze(1), init)[1][hpos].squeeze() for x in emb_data]
+
+            emb_data = t.stack(emb_data)
+            emb_data = emb_data.cpu().data.numpy()
+            kmeans = KMeans(n_clusters=2, random_state=0).fit(emb_data)
+            kmeansresult = ml_helper.calculate_kmeans_l2_dist(emb_data, kmeans)
+            result = []
+            print('Trained:', '      hpos:', hpos, '     epoch:', epoch)
+            for i in range(len(raw_d)):
+                dd = [kmeansresult[i][0], kmeansresult[i][1], raw_d[i]]
+                print(dd)
+                result.append(dd)
+            _f = lambda xx, r: np.mean([x[1] for x in list(filter(lambda x: x[0] == xx, r))])
+            print('Mean 0 dist:', _f(0, result), '   Mean 1 dist:', _f(1, result))
+            for noise in noises:
+                a = gen_string(token_a, noise)
+                b = gen_string(token_b, noise)
+
+                raw_d = []
+                raw_d += __q(a, 6)
+                raw_d += __q(b, 6)
+
+                emb_data = [to_emb(x) for x in raw_d]
+                emb_data = [lstm(x.unsqueeze(1), init)[1][hpos].squeeze() for x in emb_data]
+
+                emb_data = t.stack(emb_data)
+                emb_data = emb_data.cpu().data.numpy()
+
+                kmeansresult = ml_helper.calculate_kmeans_l2_dist(emb_data, kmeans)
+                for i in range(len(raw_d)):
+                    dd = [kmeansresult[i][0], kmeansresult[i][1], raw_d[i]]
+                    print(dd)
+                    result.append(dd)
+                print('Noise:', noise, ' Mean 0 dist:', _f(0, result), '   Mean 1 dist:', _f(1, result))
+            print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`')
+
+    return result

@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ml_helper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ml_helper.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ml_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ml_helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,10 +20,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="13500">
-              <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
+            <state relative-caret-position="255">
+              <caret line="1315" selection-start-line="1315" selection-end-line="1516" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
+                <element signature="e#54117#63257#0" />
               </folding>
             </state>
           </provider>
@@ -28,8 +33,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="2066" column="21" lean-forward="true" selection-start-line="2066" selection-start-column="21" selection-end-line="2066" selection-end-column="21" />
+            <state relative-caret-position="885">
+              <caret line="2482" selection-start-line="2482" selection-end-line="2482" />
+              <folding>
+                <element signature="e#84779#93895#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -37,10 +45,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ml_helper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="1" selection-start-column="1" selection-end-column="1" />
+            <state relative-caret-position="330">
+              <caret line="450" lean-forward="true" selection-start-line="450" selection-end-line="450" />
               <folding>
                 <element signature="e#25#42#0" expanded="true" />
+                <element signature="e#100#596#0" />
+                <element signature="e#625#10033#0" />
+                <element signature="e#10056#11055#0" />
+                <element signature="e#11081#16455#0" />
+                <element signature="e#16476#17563#0" />
+                <element signature="e#17630#18300#0" />
+                <element signature="e#18377#19953#0" />
               </folding>
             </state>
           </provider>
@@ -72,6 +87,10 @@
       <find>sgd</find>
       <find>mean</find>
       <find>bins=20</find>
+      <find>lstm</find>
+      <find>AE.create</find>
+      <find>noise</find>
+      <find>kmeans</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -108,6 +127,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -119,7 +139,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -243,23 +262,23 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="61" y="25" width="1379" height="785" extended-state="6" />
+    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.47865853" visible="true" weight="0.24778761" />
-      <window_info id="Structure" order="1" sideWeight="0.52134144" side_tool="true" visible="true" weight="0.24778761" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.47508895" visible="true" weight="0.24754098" />
+      <window_info id="Structure" order="1" sideWeight="0.52491105" side_tool="true" visible="true" weight="0.24754098" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32721382" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.15027027" />
+      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.39308855" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32829374" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3277439" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -320,12 +339,22 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="np.histogram(l)" language="Python" />
+        <watch expression="np.mean([x[1] for x in list(filter(lambda x:x[0]==1,result))])" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>len(sb)==0</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>len(sa)==0</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>noise &gt;0.5</expression-string>
         <language-id>Python</language-id>
@@ -344,57 +373,64 @@
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>np.histogram(l)</expression-string>
+        <expression-string>np.mean([x[1] for x in list(filter(lambda x:x[0]==1,result))])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>fp(data[0])</expression-string>
+        <expression-string>list(filter(lambda x:x[0]==1,result))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>fprop(data[0])</expression-string>
+        <expression-string>[x.shape for x in tout]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>losses[-100:]</expression-string>
+        <expression-string>[x.shape for x in emb_x]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>losses[-100:].mean()</expression-string>
+        <expression-string>emb_x</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>losses</expression-string>
+        <expression-string>emb_x.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>rb.mean()</expression-string>
+        <expression-string>gen_string(token_b, noise)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>ra.mean()</expression-string>
+        <expression-string>str(np.random.randint(10000, 100000))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.mean(losses)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>\</expression-string>
+        <expression-string>str(np.random.randint(100000, 100000))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
     <expressions id="setValue">
+      <expression>
+        <expression-string>tensor([[ 0.0438, -0.0851, -0.0398,  ..., -0.0261,  0.0598,  0.0415],
+        [ 0.0329, -0.0569, -0.0113,  ..., -0.0105, -0.0325,  0.0308],
+        [ 0.0476, -0.0712, -0.0215,  ..., -0.0083,  0.0481,  0.0549],
+        ...,
+        [ 0.0562, -0.0969, -0.0301,  ...,  0.0094,  0.0386,  0.0331],
+        [ 0.0510, -0.0954, -0.0223,  ..., -0.0176,  0.0429,  0.0671],
+        [ 0.0474, -0.1045, -0.0444,  ..., -0.0240,  0.0424,  0.0287]],
+       grad_fn=&lt;StackBackward&gt;)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>[0.03622844 0.03622809 0.03622774 0.03622738 0.03622703 0.03622668
  0.03622632 0.03622597 0.03622562 0.03622527 0.03622491 0.03622456
@@ -447,27 +483,9 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/optim/optimizer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/autograd/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1260">
-          <caret line="92" selection-start-line="92" selection-end-line="92" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/functional.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="1407" selection-start-line="1407" selection-end-line="1407" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/optim/optimizer.py" />
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/autograd/__init__.py" />
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/functional.py" />
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -475,54 +493,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/numpy/core/_methods.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/numpy/core/_methods.py" />
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/tensorflow/__init__.py" />
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/__init__.pyi" />
     <entry file="file://$PROJECT_DIR$/optimizer.py" />
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/cuda/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/functional.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="825">
-          <caret line="61" selection-start-line="61" selection-end-line="61" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/cuda/__init__.py" />
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/functional.py" />
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13500">
-          <caret line="909" column="50" selection-start-line="909" selection-start-column="50" selection-end-line="909" selection-end-column="50" />
+        <state relative-caret-position="255">
+          <caret line="1315" selection-start-line="1315" selection-end-line="1516" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#54117#63257#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ml_helper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="1" selection-start-column="1" selection-end-column="1" />
+        <state relative-caret-position="330">
+          <caret line="450" lean-forward="true" selection-start-line="450" selection-end-line="450" />
           <folding>
             <element signature="e#25#42#0" expanded="true" />
+            <element signature="e#100#596#0" />
+            <element signature="e#625#10033#0" />
+            <element signature="e#10056#11055#0" />
+            <element signature="e#11081#16455#0" />
+            <element signature="e#16476#17563#0" />
+            <element signature="e#17630#18300#0" />
+            <element signature="e#18377#19953#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/references.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="2066" column="21" lean-forward="true" selection-start-line="2066" selection-start-column="21" selection-end-line="2066" selection-end-column="21" />
+        <state relative-caret-position="885">
+          <caret line="2482" selection-start-line="2482" selection-end-line="2482" />
+          <folding>
+            <element signature="e#84779#93895#0" />
+          </folding>
         </state>
       </provider>
     </entry>
