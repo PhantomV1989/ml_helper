@@ -18,7 +18,32 @@ Autoencoder does not always have a folded distribution despite training every va
 '''
 
 tdevice = t.device('cpu')
+def pytorch_lstm_and_lstmcell_test():
+    emb_in = 5
+    emb_out = 2
+    dlen = 13
 
+    test = t.rand(size=[dlen, emb_in])
+
+    lstm, init1 = ml_helper.TorchHelper.create_lstm(input_size=emb_in, output_size=emb_out, batch_size=1,
+                                                    num_of_layers=1, device=tdevice)
+    lstm_seq = lstm(test.unsqueeze(1), init1)
+    lstm_unit = lstm(test[0:1].unsqueeze(1), init1)
+
+    if (lstm_seq[0][0] - lstm_unit[0][0]).mean().cpu().data.numpy() == 0:
+        print('LSTM outputs for 1st of seq and only 1st seq is same')
+    else:
+        print('LSTM inconsistent')
+
+    lstmc, init2 = ml_helper.TorchHelper.create_lstm_cell(input_size=emb_in, output_size=2, batch_size=1,
+                                                          device=tdevice)
+    lstmc_seq = lstmc(test)
+    lstmc_unit = lstmc(test[0:1], init2)
+    if abs((lstmc_seq[0][0] - lstmc_unit[0][0]).mean().cpu().data.numpy()) < 1E-7: # for some reason, error is 1E-9
+        print('LSTM cell output for 1st of seq and only 1st seq is same')
+    else:
+        print('LSTM inconsistent')
+    return
 
 def torch_backward_list_tensor_test():
     # conclusion, do not backward a list, 30x slower
@@ -2480,3 +2505,82 @@ def lstm_soft_tokenizer_test3_bprop():  # conclusion, use hpos 0, do not train!
             print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`')
 
     return result
+
+
+def sequence_anomaly_detector():
+    '''
+    Conclusion: Good, untrained lstm is only sensitive to the most recent events, so need reverse order
+    :return:
+    '''
+    import plotly.graph_objects as go
+    fig = go.Figure()
+    emb_size = 5
+    s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+                                                   device=tdevice)
+
+    def str_to_emb(_str):
+        pos = [s.find(x) for x in _str]
+        new_char = np.where(np.asarray(pos) == -1)[0]
+        for pp in new_char:
+            pos[pp] = 0
+            print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+        if pos.__contains__(-1):
+            if pos.index(-1) >= 0:
+                print('Unknown char found:', _str[pos.index(-1)])
+        pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+        return char_emb.index_select(dim=0, index=pos)
+
+    def _h(path, lim):
+        with open(path, 'r') as f:
+            data = f.readlines()
+        # data = [x[:-1] for x in data]  # remove last char \n for a start
+        data = data[5:lim]
+        data1 = [s[::-1] for s in data]
+        data_emb = [str_to_emb(x) for x in data1]
+
+        lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+        x = [x[0] for x in lstmc_hid_outputs]
+        y = [x[1] for x in lstmc_hid_outputs]
+        z = [x[2] for x in lstmc_hid_outputs]
+        return x, y, z, data
+
+    x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x1, y=y1, z=z1,
+        hovertext=n1,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="a",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='blue',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+
+    x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x2, y=y2, z=z2,
+        hovertext=n2,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="b",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='green',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+    fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+    fig.show()
+    return
+
+
+if __name__ == '__main__':
+    sequence_anomaly_detector()

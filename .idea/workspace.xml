@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ml_helper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ml_helper.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visualizations/plotly_3d.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visualizations/plotly_3d_camera.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visualizations/plotly_marker_style.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visualizations/plotly_multple_traces.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ml_helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/ml_helper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
     </list>
@@ -17,26 +18,39 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="1315" selection-start-line="1315" selection-end-line="1516" />
+            <state relative-caret-position="133">
+              <caret line="1623" column="72" selection-start-line="1623" selection-start-column="72" selection-end-line="1623" selection-end-column="72" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#54117#63257#0" />
+                <element signature="e#54244#57262#0" />
+                <element signature="e#63001#64659#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/visualizations/plotly_multple_traces.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="855">
+              <caret line="57" selection-start-line="57" selection-end-line="57" selection-end-column="73" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="885">
-              <caret line="2482" selection-start-line="2482" selection-end-line="2482" />
+            <state relative-caret-position="37560">
+              <caret line="2509" selection-start-line="2509" selection-end-line="2582" />
               <folding>
-                <element signature="e#84779#93895#0" />
+                <element signature="e#0#17#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -45,18 +59,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ml_helper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="450" lean-forward="true" selection-start-line="450" selection-end-line="450" />
-              <folding>
-                <element signature="e#25#42#0" expanded="true" />
-                <element signature="e#100#596#0" />
-                <element signature="e#625#10033#0" />
-                <element signature="e#10056#11055#0" />
-                <element signature="e#11081#16455#0" />
-                <element signature="e#16476#17563#0" />
-                <element signature="e#17630#18300#0" />
-                <element signature="e#18377#19953#0" />
-              </folding>
+            <state relative-caret-position="610">
+              <caret line="307" column="64" selection-start-line="307" selection-start-column="64" selection-end-line="307" selection-end-column="64" />
             </state>
           </provider>
         </entry>
@@ -91,6 +95,12 @@
       <find>AE.create</find>
       <find>noise</find>
       <find>kmeans</find>
+      <find>to_e</find>
+      <find>lstmce</find>
+      <find>lstm1</find>
+      <find>lstm.pa</find>
+      <find>p</find>
+      <find>[:-1]</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -101,8 +111,12 @@
       <list>
         <option value="$PROJECT_DIR$/timeseries_tests.py" />
         <option value="$PROJECT_DIR$/ml_helper.py" />
-        <option value="$PROJECT_DIR$/tests.py" />
+        <option value="$PROJECT_DIR$/visualizations/plotly_a.py" />
+        <option value="$PROJECT_DIR$/visualizations/plotly_marker_style.py" />
+        <option value="$PROJECT_DIR$/visualizations/plotly_3d_camera.py" />
+        <option value="$PROJECT_DIR$/visualizations/plotly_multple_traces.py" />
         <option value="$PROJECT_DIR$/references.py" />
+        <option value="$PROJECT_DIR$/tests.py" />
       </list>
     </option>
   </component>
@@ -135,6 +149,16 @@
               <item name="ml_helper" type="b2602c69:ProjectViewProjectNode" />
               <item name="ml_helper" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="ml_helper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ml_helper" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ml_helper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ml_helper" type="462c0819:PsiDirectoryNode" />
+              <item name="visualizations" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -159,6 +183,90 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.tests">
+    <configuration name="plotly_3d_camera" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml_helper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/visualizations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizations/plotly_3d_camera.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plotly_a" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml_helper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/visualizations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizations/plotly_3d.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plotly_marker_style" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml_helper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/visualizations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizations/plotly_marker_style.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plotly_multple_traces" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml_helper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/visualizations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizations/plotly_multple_traces.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="references" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="ml_helper" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -201,30 +309,21 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in references.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="ml_helper" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/references.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.references" />
       <item itemvalue="Python.tests" />
-      <item itemvalue="Python tests.pytest in references.py" />
+      <item itemvalue="Python.plotly_a" />
+      <item itemvalue="Python.plotly_marker_style" />
+      <item itemvalue="Python.plotly_multple_traces" />
+      <item itemvalue="Python.plotly_3d_camera" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.tests" />
-        <item itemvalue="Python tests.pytest in references.py" />
+        <item itemvalue="Python.plotly_multple_traces" />
+        <item itemvalue="Python.plotly_3d_camera" />
+        <item itemvalue="Python.plotly_marker_style" />
+        <item itemvalue="Python.plotly_a" />
       </list>
     </recent_temporary>
   </component>
@@ -262,16 +361,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.47508895" visible="true" weight="0.24754098" />
-      <window_info id="Structure" order="1" sideWeight="0.52491105" side_tool="true" visible="true" weight="0.24754098" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46813726" visible="true" weight="0.24705015" />
+      <window_info id="Structure" order="1" sideWeight="0.53186274" side_tool="true" visible="true" weight="0.24705015" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32721382" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.39308855" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3262195" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3292683" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.37804878" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
@@ -289,44 +388,49 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/references.py</url>
-          <line>657</line>
+          <line>682</line>
           <option name="timeStamp" value="326" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <condition expression="noise &gt;0.5" language="Python" />
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>676</line>
+          <line>677</line>
           <option name="timeStamp" value="327" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>939</line>
+          <line>940</line>
           <option name="timeStamp" value="336" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>936</line>
+          <line>937</line>
           <option name="timeStamp" value="340" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>957</line>
+          <line>958</line>
           <option name="timeStamp" value="341" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>951</line>
+          <line>952</line>
           <option name="timeStamp" value="343" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>955</line>
+          <line>956</line>
           <option name="timeStamp" value="345" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>934</line>
+          <line>935</line>
           <option name="timeStamp" value="357" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>1567</line>
+          <option name="timeStamp" value="472" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -339,7 +443,7 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="np.mean([x[1] for x in list(filter(lambda x:x[0]==1,result))])" language="Python" />
+        <watch expression="pdata" language="Python" />
       </configuration>
     </watches-manager>
   </component>
@@ -373,47 +477,52 @@
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>np.mean([x[1] for x in list(filter(lambda x:x[0]==1,result))])</expression-string>
+        <expression-string>pdata</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>list(filter(lambda x:x[0]==1,result))</expression-string>
+        <expression-string>[x[1] for x in mdata]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>[x.shape for x in tout]</expression-string>
+        <expression-string>mdata</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>[x.shape for x in emb_x]</expression-string>
+        <expression-string>_data</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>emb_x</expression-string>
+        <expression-string>np.hstack((dataset,np.arange(len(dataset)).reshape(len(dataset),-1)))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>emb_x.shape</expression-string>
+        <expression-string>qwe = np.arange(len(dataset)).reshape(len(dataset),-1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>gen_string(token_b, noise)</expression-string>
+        <expression-string>np.hstack((dataset,qwe))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>str(np.random.randint(10000, 100000))</expression-string>
+        <expression-string>np.hstack((dataset,qwe)).shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>str(np.random.randint(100000, 100000))</expression-string>
+        <expression-string>np.hstack((dataset,qwe.astype(float)))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>np.vstack((dataset,qwe.astype(float)))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -499,40 +608,86 @@
     <entry file="file://$PROJECT_DIR$/optimizer.py" />
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/cuda/__init__.py" />
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/functional.py" />
-    <entry file="file://$PROJECT_DIR$/tests.py">
+    <entry file="file://$PROJECT_DIR$/visualizations/plotly_3d.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="1315" selection-start-line="1315" selection-end-line="1516" />
+        <state relative-caret-position="60">
+          <caret line="4" column="39" lean-forward="true" selection-start-line="4" selection-start-column="39" selection-end-line="4" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizations/plotly_3d_camera.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="13" lean-forward="true" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizations/plotly_marker_style.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="19" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/modules/loss.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="511" selection-start-line="511" selection-end-line="511" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/modules/rnn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-507">
+          <caret line="373" selection-start-line="373" selection-end-line="373" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/references.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="37560">
+          <caret line="2509" selection-start-line="2509" selection-end-line="2582" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#54117#63257#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ml_helper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="450" lean-forward="true" selection-start-line="450" selection-end-line="450" />
+        <state relative-caret-position="610">
+          <caret line="307" column="64" selection-start-line="307" selection-start-column="64" selection-end-line="307" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/plotly/basedatatypes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="844" column="8" selection-start-line="844" selection-start-column="8" selection-end-line="844" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizations/plotly_multple_traces.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="57" selection-start-line="57" selection-end-line="57" selection-end-column="73" />
           <folding>
-            <element signature="e#25#42#0" expanded="true" />
-            <element signature="e#100#596#0" />
-            <element signature="e#625#10033#0" />
-            <element signature="e#10056#11055#0" />
-            <element signature="e#11081#16455#0" />
-            <element signature="e#16476#17563#0" />
-            <element signature="e#17630#18300#0" />
-            <element signature="e#18377#19953#0" />
+            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/references.py">
+    <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="885">
-          <caret line="2482" selection-start-line="2482" selection-end-line="2482" />
+        <state relative-caret-position="133">
+          <caret line="1623" column="72" selection-start-line="1623" selection-start-column="72" selection-end-line="1623" selection-end-column="72" />
           <folding>
-            <element signature="e#84779#93895#0" />
+            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#54244#57262#0" />
+            <element signature="e#63001#64659#0" />
           </folding>
         </state>
       </provider>

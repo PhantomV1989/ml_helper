@@ -8,8 +8,9 @@ from sklearn import tree
 from sklearn.metrics import accuracy_score
 import datetime as dt
 import pickle
+from sklearn.preprocessing import scale
 
-tdevice = t.device('cuda')
+tdevice = t.device('cpu')
 
 
 def test_one_hot():
@@ -1313,214 +1314,343 @@ def lstm_soft_tokenizer_test2_no_bprop():
     return result
 
 
-def lstm_soft_tokenizer_test3_bprop():  # conclusion, use hpos 0, do not train!
-    '''
-    This test uses different levels of noise to see how it affects cluster distance
-
-    hpos 0
-    Trained:       hpos: 0      epoch: 0
-    Mean 0 dist: 0.085740454    Mean 1 dist: 0.08034747
-    Noise: 0  Mean 0 dist: 0.08337033    Mean 1 dist: 0.08020365
-    Noise: 0.3  Mean 0 dist: 0.083686255    Mean 1 dist: 0.079644
-    Noise: 0.6  Mean 0 dist: 0.08642816    Mean 1 dist: 0.08586879
-    Noise: 0.9  Mean 0 dist: 0.08821142    Mean 1 dist: 0.09035872
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 0      epoch: 50
-    Mean 0 dist: 0.097721    Mean 1 dist: 0.07404581
-    Noise: 0  Mean 0 dist: 0.10306854    Mean 1 dist: 0.07742782
-    Noise: 0.3  Mean 0 dist: 0.098747276    Mean 1 dist: 0.075664364
-    Noise: 0.6  Mean 0 dist: 0.100001805    Mean 1 dist: 0.078215666
-    Noise: 0.9  Mean 0 dist: 0.09953197    Mean 1 dist: 0.07350741
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 0      epoch: 100
-    Mean 0 dist: 0.07127062    Mean 1 dist: 0.04568113
-    Noise: 0  Mean 0 dist: 0.0789597    Mean 1 dist: 0.06558163
-    Noise: 0.3  Mean 0 dist: 0.09540307    Mean 1 dist: 0.066584796
-    Noise: 0.6  Mean 0 dist: 0.09451891    Mean 1 dist: 0.06918518
-    Noise: 0.9  Mean 0 dist: 0.09060608    Mean 1 dist: 0.07060514
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 0      epoch: 200
-    Mean 0 dist: 0.07298227    Mean 1 dist: 0.053299107
-    Noise: 0  Mean 0 dist: 0.074950665    Mean 1 dist: 0.0685109
-    Noise: 0.3  Mean 0 dist: 0.07969724    Mean 1 dist: 0.07138041
-    Noise: 0.6  Mean 0 dist: 0.07909531    Mean 1 dist: 0.068273015
-    Noise: 0.9  Mean 0 dist: 0.07962487    Mean 1 dist: 0.07284217
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 0      epoch: 400
-    Mean 0 dist: 0.043070335    Mean 1 dist: 0.07312809
-    Noise: 0  Mean 0 dist: 0.06168162    Mean 1 dist: 0.08479026
-    Noise: 0.3  Mean 0 dist: 0.07748585    Mean 1 dist: 0.08131081
-    Noise: 0.6  Mean 0 dist: 0.07637892    Mean 1 dist: 0.084395714
-    Noise: 0.9  Mean 0 dist: 0.078387454    Mean 1 dist: 0.08522397
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-
-    hpos 1
-    Trained:       hpos: 1      epoch: 0
-    Mean 0 dist: 0.11025281    Mean 1 dist: 0.20556316
-    Noise: 0  Mean 0 dist: 0.112020105    Mean 1 dist: 0.22835408
-    Noise: 0.3  Mean 0 dist: 0.14473037    Mean 1 dist: 0.23362632
-    Noise: 0.6  Mean 0 dist: 0.146825    Mean 1 dist: 0.2465113
-    Noise: 0.9  Mean 0 dist: 0.16124994    Mean 1 dist: 0.23776141
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 1      epoch: 50
-    Mean 0 dist: 0.026892697    Mean 1 dist: 0.2056124
-    Noise: 0  Mean 0 dist: 0.07063694    Mean 1 dist: 0.25189567
-    Noise: 0.3  Mean 0 dist: 0.099446036    Mean 1 dist: 0.2817078
-    Noise: 0.6  Mean 0 dist: 0.13513166    Mean 1 dist: 0.280791
-    Noise: 0.9  Mean 0 dist: 0.13856702    Mean 1 dist: 0.27545655
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 1      epoch: 100
-    Mean 0 dist: 0.13101763    Mean 1 dist: 0.15390229
-    Noise: 0  Mean 0 dist: 0.19830903    Mean 1 dist: 0.18540102
-    Noise: 0.3  Mean 0 dist: 0.25799206    Mean 1 dist: 0.20213817
-    Noise: 0.6  Mean 0 dist: 0.27620098    Mean 1 dist: 0.21329604
-    Noise: 0.9  Mean 0 dist: 0.30428806    Mean 1 dist: 0.21329749
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 1      epoch: 200
-    Mean 0 dist: 0.21384151    Mean 1 dist: 0.184044
-    Noise: 0  Mean 0 dist: 0.26144183    Mean 1 dist: 0.17323501
-    Noise: 0.3  Mean 0 dist: 0.26641637    Mean 1 dist: 0.16037549
-    Noise: 0.6  Mean 0 dist: 0.25684977    Mean 1 dist: 0.16037549
-    Noise: 0.9  Mean 0 dist: 0.26100856    Mean 1 dist: 0.18366113
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    Trained:       hpos: 1      epoch: 400
-    Mean 0 dist: 0.2137606    Mean 1 dist: 0.17700988
-    Noise: 0  Mean 0 dist: 0.2314634    Mean 1 dist: 0.18622921
-    Noise: 0.3  Mean 0 dist: 0.23173063    Mean 1 dist: 0.16729419
-    Noise: 0.6  Mean 0 dist: 0.2504138    Mean 1 dist: 0.16967341
-    Noise: 0.9  Mean 0 dist: 0.25338277    Mean 1 dist: 0.17086087
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    '''
-    from sklearn.cluster import KMeans
-    dlen = 100
-    noises = [0, 0.3, 0.6, 0.9]
-    emb_size = 10
-
-    emb = t.rand([10, emb_size], device=tdevice)
-
-    def to_emb(a):
-        a = [t.tensor([int(x) for x in y], device=tdevice) for y in a]
-        a = t.cat([emb.index_select(dim=0, index=x) for x in a])
-        return a
-
-    def token_a():
-        pattern = '112233'
-        alter_pattern = '34'
-        new_token = ''
-        for p in pattern:
-            new_token += p
-            if np.random.rand() > 0.7:
-                new_token += np.random.choice(list(alter_pattern))
-        return new_token
-
-    def token_b():
-        pattern = '332211'
-        alter_pattern = '56'
-        new_token = ''
-        for p in pattern:
-            new_token += p
-            if np.random.rand() > 0.7:
-                new_token += np.random.choice(list(alter_pattern))
-        return new_token
-
-    def gen_string(gt, noise):
-        dstring = ''
-        while len(dstring) <= dlen:
-            if np.random.rand() < noise:
-                dstring += str(np.random.randint(0, 100000))
-            dstring += gt()
-        return dstring[:dlen]
-
-    a = gen_string(token_a, 0)
-    b = gen_string(token_b, 0)
-    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=emb_size, batch_size=1,
-                                                   num_of_layers=1,
-                                                   device=tdevice)
-
-    def __q(k, cnt):
-        raw_d = []
-        for i in range(cnt):
-            sizee = np.random.randint(7, 20)
-            poss = np.min([np.random.randint(dlen), dlen - sizee])
-            sa = k[poss:np.min([poss + sizee, len(a) - 1])]
-            raw_d.append(sa)
-        return raw_d
-
-    raw_d = []
-    raw_d += __q(a, 10)
-    raw_d += __q(b, 10)
-
-    for epoch in [0]:
-        for hpos in [0]:
-
-            # ~~~~~~~~start training~~~~~~~~~~~~~~~~
-            raw_x = [x[:-1] for x in raw_d]
-            raw_y = [x[1:] for x in raw_d]
-
-            emb_x = [to_emb(x) for x in raw_x]
-            emb_y = [to_emb(x) for x in raw_y]
-
-            op = t.optim.SGD(lstm.parameters(), lr=0.001)
-            for i in range(epoch):
-                _y = [lstm(x.unsqueeze(1), init)[0].squeeze() for x in emb_x]
-                y = emb_y
-
-                for ii in range(len(emb_x)):
-                    _yy = _y[ii]
-                    yy = y[ii]
-
-                    loss = t.nn.MSELoss()(_yy, yy)
-                    loss.backward(retain_graph=True)
-
-                op.step()
-                op.zero_grad()
-
-            # ~~~~~~~~~stop training~~~~~~~~~~~~~~~~
-            emb_data = [to_emb(x) for x in raw_d]
-            emb_data = [lstm(x.unsqueeze(1), init)[1][hpos].squeeze() for x in emb_data]
-
-            emb_data = t.stack(emb_data)
-            emb_data = emb_data.cpu().data.numpy()
-            kmeans = KMeans(n_clusters=2, random_state=0).fit(emb_data)
-            kmeansresult = ml_helper.calculate_kmeans_l2_dist(emb_data, kmeans)
-            result = []
-            print('Trained:', '      hpos:', hpos, '     epoch:', epoch)
-            for i in range(len(raw_d)):
-                dd = [kmeansresult[i][0], kmeansresult[i][1], raw_d[i]]
-                print(dd)
-                result.append(dd)
-            _f = lambda xx, r: np.mean([x[1] for x in list(filter(lambda x: x[0] == xx, r))])
-            print('Mean 0 dist:', _f(0, result), '   Mean 1 dist:', _f(1, result))
-            for noise in noises:
-                a = gen_string(token_a, noise)
-                b = gen_string(token_b, noise)
-
-                raw_d = []
-                raw_d += __q(a, 6)
-                raw_d += __q(b, 6)
-
-                emb_data = [to_emb(x) for x in raw_d]
-                emb_data = [lstm(x.unsqueeze(1), init)[1][hpos].squeeze() for x in emb_data]
-
-                emb_data = t.stack(emb_data)
-                emb_data = emb_data.cpu().data.numpy()
-
-                kmeansresult = ml_helper.calculate_kmeans_l2_dist(emb_data, kmeans)
-                for i in range(len(raw_d)):
-                    dd = [kmeansresult[i][0], kmeansresult[i][1], raw_d[i]]
-                    print(dd)
-                    result.append(dd)
-                print('Noise:', noise, ' Mean 0 dist:', _f(0, result), '   Mean 1 dist:', _f(1, result))
-            print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`')
-
-    return result
-
-
 def save(path, obj):
     with open(path, 'wb') as f:
         pickle.dump(obj, f)
     return
 
 
+def untrained_lstm_clustering2():
+    import plotly.graph_objects as go
+    fig = go.Figure()
+    emb_size = 5
+    s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+                                                   device=tdevice)
+
+    def gen_data_a():
+        s1 = '1234567890'
+        s2 = 'abc'
+        data = []
+        for i in range(50):
+            _s = ''
+            for ii in range(10):
+                if np.random.rand() < i / 100:
+                    _s += np.random.choice(list(s2))
+                else:
+                    _s += s1[ii]
+            data.append(_s)
+        return data
+
+    def gen_data_b():
+        s1 = 'abcdefghij'
+        s2 = '123'
+        data = []
+        for i in range(50):
+            _s = ''
+            for ii in range(10):
+                if np.random.rand() < i / 100:
+                    _s += np.random.choice(list(s2))
+                else:
+                    _s += s1[ii]
+            data.append(_s)
+        return data
+
+    def str_to_emb(_str):
+        pos = [s.find(x) for x in _str]
+        new_char = np.where(np.asarray(pos) == -1)[0]
+        for pp in new_char:
+            pos[pp] = 0
+            print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+        if pos.__contains__(-1):
+            if pos.index(-1) >= 0:
+                print('Unknown char found:', _str[pos.index(-1)])
+        pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+        return char_emb.index_select(dim=0, index=pos)
+
+    def _h(gdata):
+        data = gdata()
+        data1 = [s[::-1] for s in data]
+        data_emb = [str_to_emb(x) for x in data1]
+
+        lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+        x = [x[0] for x in lstmc_hid_outputs]
+        y = [x[1] for x in lstmc_hid_outputs]
+        z = [x[2] for x in lstmc_hid_outputs]
+        return x, y, z, data
+
+    x1, y1, z1, n1 = _h(gen_data_a)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x1, y=y1, z=z1,
+        hovertext=n1,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="a",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='blue',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+
+    x2, y2, z2, n2 = _h(gen_data_b)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x2, y=y2, z=z2,
+        hovertext=n2,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="b",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='green',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+    fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+    fig.show()
+    return
+
+
+def untrained_lstm_clustering():
+    '''
+    Conclusion: Good, but untrained lstm is only sensitive to the most recent events, so need reverse order
+    Trained lstm attempts to converge everything to singularity, bad
+    RNN fails to even separate events at all
+    :return:
+    '''
+    import plotly.graph_objects as go
+    fig = go.Figure()
+    emb_size = 5
+    s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+                                                   device=tdevice)
+
+    def str_to_emb(_str):
+        pos = [s.find(x) for x in _str]
+        new_char = np.where(np.asarray(pos) == -1)[0]
+        for pp in new_char:
+            pos[pp] = 0
+            print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+        if pos.__contains__(-1):
+            if pos.index(-1) >= 0:
+                print('Unknown char found:', _str[pos.index(-1)])
+        pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+        return char_emb.index_select(dim=0, index=pos)
+
+    def _h(path, lim):
+        with open(path, 'r') as f:
+            data = f.readlines()
+        # data = [x[:-1] for x in data]  # remove last char \n for a start
+        data = data[5:lim]
+        data1 = [s[::-1] for s in data]
+        data_emb = [str_to_emb(x) for x in data1]
+
+        lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+        x = [x[0] for x in lstmc_hid_outputs]
+        y = [x[1] for x in lstmc_hid_outputs]
+        z = [x[2] for x in lstmc_hid_outputs]
+        return x, y, z, data
+
+    x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x1, y=y1, z=z1,
+        hovertext=n1,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="a",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='blue',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+
+    x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+    # start plotting
+    fig.add_trace(go.Scatter3d(
+        x=x2, y=y2, z=z2,
+        hovertext=n2,
+        hoverinfo='text',  # this means xzy info is removed from hover
+        name="b",
+        mode='markers',
+        marker=dict(
+            size=8,
+            color='green',  # set color to an array/list of desired values
+            opacity=0.7
+        )
+    ))
+    fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+    fig.show()
+    return
+
+
+def anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer():
+    '''
+    Note! The axis are not uniform in scale
+    :return:
+    '''
+    import plotly.graph_objects as go
+    fig = go.Figure()
+    emb_size = 5
+    s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+                                                   device=tdevice)
+
+    def str_to_emb(_str):
+        pos = [s.find(x) for x in _str]
+        new_char = np.where(np.asarray(pos) == -1)[0]
+        for pp in new_char:
+            pos[pp] = 0
+            print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+        if pos.__contains__(-1):
+            if pos.index(-1) >= 0:
+                print('Unknown char found:', _str[pos.index(-1)])
+        pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+        return char_emb.index_select(dim=0, index=pos)
+
+    def get_point_densities(data, rel_bin_size=0.03):
+        _data = []
+        max_axis_len = np.max([data[:, d].max() - data[:, d].min() for d in range(data.shape[1])])
+        max_dist = rel_bin_size * max_axis_len
+
+        for d in data:
+            cnt = 1
+            for do in _data:
+                if np.linalg.norm(d - do[0]) <= max_dist:
+                    do[1] += 1
+                    cnt += 1
+            _data.append([d, cnt])
+        return _data, max_dist
+
+    def get_nearest_neighbor(datapoint, dataset):
+        r = [np.linalg.norm(d - datapoint) for d in dataset]
+        return np.argmin(r), r[np.argmin(r)]
+
+    def normalize_coordinates(dataset):
+        minMax = []
+        for i in range(dataset.shape[1]):
+            v = np.copy(dataset[:, i])
+            dataset[:, i] = (v - v.min()) / (v.max() - v.min())
+            minMax.append([v.min(), v.max() - v.min()])
+
+        def f(x):
+            for i in range(x.shape[1]):
+                x[:, i] = (x[:, i] - minMax[i][0]) / minMax[i][1]
+            return x
+
+        return dataset, f
+
+    def train_anomaly_function(datasetwdensity):
+        # filters all those of density 1, and use them as reference points
+        loners = [x[0] for x in list(filter(lambda x: x[1] == 1, datasetwdensity))]
+        others_o = [x for x in list(filter(lambda x: x[1] > 1, datasetwdensity))]
+        others = [x[0] for x in others_o]
+        nearest_nei = [get_nearest_neighbor(x, others) for x in loners]
+        furthest = []
+        for n in nearest_nei:
+            ndensity = others_o[n[0]][1]
+            ndist = n[1]
+            if furthest == []:
+                furthest = [ndist, ndensity]
+            elif ndist > furthest[0]:
+                furthest = [ndist, ndensity]
+
+            asd = 5
+        return
+
+    def get_partitions(dataset, min_size=3, min_width=0.02):
+        axis_cnt = dataset.shape[1]
+        axis_partitions = []
+        mdata = [[x, ''] for x in dataset]
+        tdataset = np.hstack((dataset, np.arange(len(dataset)).reshape(len(dataset), -1)))
+        for i in range(axis_cnt):
+            partition_id = 0
+            _data = tdataset[tdataset[:, i].argsort()]
+            current_partition_members = []
+            current_partition_pos = []
+            for ii in range(len(_data)):
+                d = _data[ii][i]
+                di = int(_data[ii][axis_cnt])
+                if len(current_partition_members) < min_size:
+                    current_partition_members.append(di)
+                    continue
+                else:
+                    if ii + 1 >= len(_data):
+                        for _m in current_partition_members:
+                            mdata[_m][1] += str(partition_id)
+                        break
+                    next = _data[ii + 1][i]
+                    if next - d > min_width:
+                        current_partition_pos.append((next + d) / 2)
+                        current_partition_members.append(di)
+                        for _m in current_partition_members:
+                            mdata[_m][1] += str(partition_id)
+                        current_partition_members = []
+                        partition_id += 1
+                    else:
+                        current_partition_members.append(di)
+            axis_partitions.append(current_partition_pos)
+        _p = {}
+        for m in mdata:
+            if not m[1] in _p:
+                _p[m[1]] = [m[0]]
+            else:
+                _p[m[1]].append(m[0])
+        for k in _p:
+            _p[k] = np.asarray(_p[k])
+        return _p, axis_partitions
+
+    def rrgb():
+        return 'rgb(' + str(np.random.randint(0, 255)) + ',' + str(np.random.randint(0, 255)) + ',' + str(
+            np.random.randint(0, 255)) + ')'
+
+    def plot_d(dataset, name):
+        x = [x[0] for x in dataset]
+        y = [x[1] for x in dataset]
+        z = [x[2] for x in dataset]
+
+        fig.add_trace(go.Scatter3d(
+            x=x, y=y, z=z,
+            hovertext=data, name=name, mode='markers', hoverinfo='text',
+            marker=dict(size=8, color=rrgb(), opacity=0.3)
+        ))
+        return
+
+    def calculate_anomaly_score():
+        return
+
+    with open('./data/nodejs_lib_paths.txt', 'r') as f:
+        data = f.readlines()
+    data = [x[:-1] for x in data]  # remove last char \n for a start
+    dx = data[-500]
+    data = data[:2000]
+    data1 = [s[::-1] for s in data]
+    data_emb = [str_to_emb(x) for x in data1]
+
+    lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+    lstmc_hid_outputs = np.stack(lstmc_hid_outputs)
+    lstmc_hid_outputs, scalar = normalize_coordinates(lstmc_hid_outputs)
+    # dens, bin_dist = get_point_densities(lstmc_hid_outputs)
+
+    # anomaly_function = train_anomaly_function(dens)
+    pdata, paxes = get_partitions(lstmc_hid_outputs)
+    for k in pdata:
+        plot_d(pdata[k], k)
+
+    fig.update_traces(marker=dict(line=dict(width=1, color='black')))
+    fig.show()
+    return
+
+
 if __name__ == '__main__':
-    lstm_soft_tokenizer_test3_bprop()
+    anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer()
