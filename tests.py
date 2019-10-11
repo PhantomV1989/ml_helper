@@ -5,12 +5,15 @@ import datetime as dt
 import copy
 import ml_helper
 from sklearn import tree
+from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score
 import datetime as dt
 import pickle
 from sklearn.preprocessing import scale
 
 tdevice = t.device('cpu')
+sigmoid = lambda x: 1 / (1 + np.exp(-x))
+isigmoid = lambda x: np.log(x / (1 - x))
 
 
 def test_one_hot():
@@ -1493,18 +1496,37 @@ def untrained_lstm_clustering():
     return
 
 
-def anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer():
+def anomaly_detection_for_sequences_using_untrained_lstm_density_clustering_manifold_learning():
     '''
     Note! The axis are not uniform in scale
     :return:
     '''
     import plotly.graph_objects as go
+    import os
+    krng = 0.08
+    xname = 0.7
+    gz = 0.07
+
     fig = go.Figure()
     emb_size = 5
     s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
-    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
-    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
-                                                   device=tdevice)
+    if os.path.exists('./data/char_emb'):
+        with open('./data/char_emb', 'rb') as f:
+            char_emb = pickle.load(f)
+    else:
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        with open('./data/char_emb', 'wb') as f:
+            pickle.dump(char_emb, f)
+
+    if os.path.exists('./data/lstm'):
+        with open('./data/lstm', 'rb') as f:
+            lstm = pickle.load(f)
+    else:
+        lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1,
+                                                       num_of_layers=1,
+                                                       device=tdevice)
+        with open('./data/lstm', 'wb') as f:
+            pickle.dump(lstm, f)
 
     def str_to_emb(_str):
         pos = [s.find(x) for x in _str]
@@ -1518,23 +1540,25 @@ def anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer():
         pos = t.tensor(pos, dtype=t.int64, device=tdevice)
         return char_emb.index_select(dim=0, index=pos)
 
-    def get_point_densities(data, rel_bin_size=0.03):
-        _data = []
-        max_axis_len = np.max([data[:, d].max() - data[:, d].min() for d in range(data.shape[1])])
-        max_dist = rel_bin_size * max_axis_len
-
-        for d in data:
-            cnt = 1
-            for do in _data:
-                if np.linalg.norm(d - do[0]) <= max_dist:
-                    do[1] += 1
-                    cnt += 1
-            _data.append([d, cnt])
-        return _data, max_dist
-
-    def get_nearest_neighbor(datapoint, dataset):
-        r = [np.linalg.norm(d - datapoint) for d in dataset]
-        return np.argmin(r), r[np.argmin(r)]
+    def get_anomaly_score(point, data, vector_field, grid_size, x=0.5):
+        '''
+        let a=datapoint, b = point, v = a->b, n_a = vector of a
+        Eqn = (x*v.n_a/||v||/||n_a||+(1-x))*||v||
+        where
+        (1-x) is score component by a single datapoint itself
+        (x*v.n_a) is score component by the vector of the datapoint
+        '''
+        scores = []
+        mx = 4.595119850134589 / grid_size  # isigmoid(0.99)
+        l2 = np.linalg.norm
+        for i, d in enumerate(data):
+            v = d - point
+            l2d = l2(v)
+            if l2d < grid_size * 3:
+                acom = np.dot(v, vector_field[i]) / l2(v) / l2(vector_field[i]) if not all(vector_field[i] == 0) else 0
+                score = sigmoid(mx * (l2d - grid_size) * (x * acom + 1 - x))
+                scores.append(score)
+        return np.min(scores) if len(scores) > 0 else 1.0
 
     def normalize_coordinates(dataset):
         minMax = []
@@ -1550,107 +1574,214 @@ def anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer():
 
         return dataset, f
 
-    def train_anomaly_function(datasetwdensity):
-        # filters all those of density 1, and use them as reference points
-        loners = [x[0] for x in list(filter(lambda x: x[1] == 1, datasetwdensity))]
-        others_o = [x for x in list(filter(lambda x: x[1] > 1, datasetwdensity))]
-        others = [x[0] for x in others_o]
-        nearest_nei = [get_nearest_neighbor(x, others) for x in loners]
-        furthest = []
-        for n in nearest_nei:
-            ndensity = others_o[n[0]][1]
-            ndist = n[1]
-            if furthest == []:
-                furthest = [ndist, ndensity]
-            elif ndist > furthest[0]:
-                furthest = [ndist, ndensity]
-
-            asd = 5
-        return
-
-    def get_partitions(dataset, min_size=3, min_width=0.02):
+    def get_density_partitions(dataset, density_interval=0.005, min_size=0):
+        if min_size == 0:
+            min_size = round(len(dataset) * 0.1)
+        density = min_size / density_interval
         axis_cnt = dataset.shape[1]
-        axis_partitions = []
-        mdata = [[x, ''] for x in dataset]
+        axis_partitions = {}
+        mdata = [[x, [0] * axis_cnt] for x in dataset]
         tdataset = np.hstack((dataset, np.arange(len(dataset)).reshape(len(dataset), -1)))
         for i in range(axis_cnt):
             partition_id = 0
             _data = tdataset[tdataset[:, i].argsort()]
-            current_partition_members = []
-            current_partition_pos = []
-            for ii in range(len(_data)):
-                d = _data[ii][i]
-                di = int(_data[ii][axis_cnt])
-                if len(current_partition_members) < min_size:
-                    current_partition_members.append(di)
-                    continue
+
+            ii = 0
+            last_state = False
+            while True:
+                if ii + min_size >= len(_data):
+                    break
                 else:
-                    if ii + 1 >= len(_data):
-                        for _m in current_partition_members:
-                            mdata[_m][1] += str(partition_id)
-                        break
-                    next = _data[ii + 1][i]
-                    if next - d > min_width:
-                        current_partition_pos.append((next + d) / 2)
-                        current_partition_members.append(di)
-                        for _m in current_partition_members:
-                            mdata[_m][1] += str(partition_id)
-                        current_partition_members = []
-                        partition_id += 1
-                    else:
-                        current_partition_members.append(di)
-            axis_partitions.append(current_partition_pos)
-        _p = {}
+                    cwindow = _data[ii:ii + min_size + 1][:, i]
+                    cdensity = min_size / (cwindow.max() - cwindow.min())
+                    state = cdensity > density
+                    if state:
+                        if not last_state:
+                            partition_id += 1
+                        for dd in _data[ii:ii + min_size + 1][:, axis_cnt]:
+                            mdata[int(dd)][1][i] = partition_id
+                    last_state = state
+                ii += 1
+
+        mdata = [[x[0], ''.join([str(y) for y in x[1]])] for x in mdata]
+        dense = list(filter(lambda x: not '0' in x[1], mdata))
+        kd = set([x[1] for x in dense])
+        for d in kd:
+            dset = list(filter(lambda x: x[1] == d, mdata))
+            tr = []
+            for i in range(axis_cnt):
+                axi = [x[0][i] for x in dset]
+                tr.append([np.min(axi), np.max(axi)])
+            axis_partitions[d] = tr
+        mdata = [x[1] for x in mdata]
+        mdata = ['0' * axis_cnt if '0' in x else x for x in mdata]
+
+        lkeys = {}
         for m in mdata:
-            if not m[1] in _p:
-                _p[m[1]] = [m[0]]
+            if not m in lkeys:
+                lkeys[m] = 1
             else:
-                _p[m[1]].append(m[0])
-        for k in _p:
-            _p[k] = np.asarray(_p[k])
-        return _p, axis_partitions
+                lkeys[m] += 1
+        if np.std([lkeys[k] for k in lkeys]) < len(data) / 20:
+            return ['0' * axis_cnt] * len(data), {}
+        return mdata, axis_partitions
+
+    def get_principle_components(dataset, density_interval=0.005, min_size=0):
+        axis_cnt = np.shape(dataset)[1]
+        dense_labels, dense_partitions = get_density_partitions(dataset, density_interval=density_interval,
+                                                                min_size=min_size)
+        pc_bucket = np.zeros_like(dataset)
+        dense_clusters = {}
+        for i, dl in enumerate(dense_labels):
+            if dl != '0' * axis_cnt:
+                if not dl in dense_clusters:
+                    dense_clusters[dl] = [i]
+                else:
+                    dense_clusters[dl].append(i)
+        if dense_clusters == {}:
+            dense_clusters['0' * axis_cnt] = [i for i in range(len(dataset))]
+
+        for dclus in dense_clusters:
+            cluster_pos = dense_clusters[dclus]
+            cluster_points = dataset[cluster_pos, :]
+            max_axis_range = [[cluster_points[:, x].min(), cluster_points[:, x].max()] for x in range(axis_cnt)]
+            max_range = np.linalg.norm(
+                np.asarray([x[0] for x in max_axis_range]) - np.asarray([x[1] for x in max_axis_range]))
+            rng = max_range * krng
+            point_bucket = [[] for x in cluster_points]
+
+            for i in range(len(cluster_points) - 1):
+                cpoint = cluster_points[i]
+                for ii in range(i + 1, len(cluster_points)):
+                    npoint = cluster_points[ii]
+                    if np.linalg.norm(cpoint - npoint) < rng:  # fills 2 clusters simultaneusly
+                        point_bucket[i].append(npoint)
+                        point_bucket[ii].append(cpoint)
+            den = np.max([len(x) for x in point_bucket])
+            for bi in range(len(point_bucket)):
+                if len(point_bucket[bi]) > 0:
+                    points = np.asarray(point_bucket[bi])
+                    pc = PCA(n_components=1).fit(np.asarray(points)).components_  # alrddy len 1
+                    pc_bucket[cluster_pos[bi]] = pc * len(point_bucket[bi]) / den
+
+        _debug = []
+        for i in range(len(dataset)):
+            _debug.append(dataset[i])
+            _debug.append(dataset[i] + pc_bucket[i] / 10)
+            _debug.append([None] * axis_cnt)
+        plot_l(_debug)
+        return pc_bucket
+
+    def plot_l(dataset):
+        x = [x[0] for x in dataset]
+        y = [x[1] for x in dataset]
+        z = [x[2] for x in dataset]
+
+        fig.add_trace(go.Scatter3d(
+            x=x, y=y, z=z, mode='lines', line=dict(color='red', width=1),
+        ))
+        return
+
+    def apply_labels(dataset, labels):
+        ldata = {}
+        for i, d in enumerate(dataset):
+            label = labels[i]
+            if not label in ldata:
+                ldata[label] = [d]
+            else:
+                ldata[label].append(d)
+        return ldata
 
     def rrgb():
         return 'rgb(' + str(np.random.randint(0, 255)) + ',' + str(np.random.randint(0, 255)) + ',' + str(
             np.random.randint(0, 255)) + ')'
 
-    def plot_d(dataset, name):
+    def plot_d(dataset, name, htext):
         x = [x[0] for x in dataset]
         y = [x[1] for x in dataset]
         z = [x[2] for x in dataset]
 
         fig.add_trace(go.Scatter3d(
             x=x, y=y, z=z,
-            hovertext=data, name=name, mode='markers', hoverinfo='text',
-            marker=dict(size=8, color=rrgb(), opacity=0.3)
+            hovertext=htext, name=name, mode='markers', hoverinfo='text',
+            marker=dict(size=8, color=rrgb(), opacity=0.9,
+                        line=dict(width=1, color='black'))
         ))
         return
 
-    def calculate_anomaly_score():
-        return
-
-    with open('./data/nodejs_lib_paths.txt', 'r') as f:
+    with open('./data/python_lib_paths.txt', 'r') as f:
         data = f.readlines()
+    # with open('./data/nodejs_lib_paths.txt', 'r') as f:
+    #     data = f.readlines()
+    #     data = data[5:]
+    np.random.shuffle(data)
+
     data = [x[:-1] for x in data]  # remove last char \n for a start
-    dx = data[-500]
-    data = data[:2000]
+    data = data[:200]
     data1 = [s[::-1] for s in data]
     data_emb = [str_to_emb(x) for x in data1]
 
-    lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+    lstmc_hid_outputs = [lstm(x.unsqueeze(1))[1][0].squeeze().cpu().data.numpy() for x in data_emb]
     lstmc_hid_outputs = np.stack(lstmc_hid_outputs)
     lstmc_hid_outputs, scalar = normalize_coordinates(lstmc_hid_outputs)
+
+    labels, axies = get_density_partitions(lstmc_hid_outputs)
+    ldata = apply_labels(lstmc_hid_outputs, labels)
+
     # dens, bin_dist = get_point_densities(lstmc_hid_outputs)
+    # for i, n in enumerate(data):
+    #     data[i] = '<br />'.join([n, str(dens[i])])
 
-    # anomaly_function = train_anomaly_function(dens)
-    pdata, paxes = get_partitions(lstmc_hid_outputs)
-    for k in pdata:
-        plot_d(pdata[k], k)
+    ltextdata = apply_labels(data, labels)
+    for l in ldata:
+        ldata[l] = np.asarray(ldata[l])
+    for k in ldata:
+        plot_d(ldata[k], k, ltextdata[k])
 
-    fig.update_traces(marker=dict(line=dict(width=1, color='black')))
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    rand_points = []  #
+    rand_scores = []
+    nvectors = get_principle_components(lstmc_hid_outputs)
+    for i in [0.3, 0.6, 0.9]:  # np.arange(0.27, 0.32, 0.01):
+        for j in np.arange(0, 1, 0.03):
+            for k in np.arange(0, 1, 0.03):
+                new_point = [i, j, k]
+                score = get_anomaly_score(new_point, lstmc_hid_outputs, nvectors, grid_size=gz, x=xname)
+                qwe = 0.95
+                if score < qwe:
+                    rand_scores.append(score)
+                    rand_points.append(new_point)
+
+    # pts = [
+    #     [0.3, 0.38, 0.7]
+    # ]
+    # for new_point in pts:
+    #     score = get_anomaly_score(new_point, data, nvectors, grid_size=gz, x=xname)
+    #     rand_scores.append(score)
+    #     rand_points.append(new_point)
+
+    # for i in range(3000):
+    #     new_point = data[np.random.randint(len(data))] + 0.05 * np.random.normal(scale=1, size=3)
+    #     # new_point = np.random.rand(3)
+    #     score = get_anomaly_score(new_point, data, nvectors, grid_size=gz, x=xname)
+    #     if score < 0.9:
+    #         rand_scores.append(score)
+    #         rand_points.append(new_point)
+
+    x = [x[0] for x in rand_points]
+    y = [x[1] for x in rand_points]
+    z = [x[2] for x in rand_points]
+
+    fig.add_trace(go.Scatter3d(
+        x=x, y=y, z=z,
+        hovertext=[str(x) for x in rand_scores], name=str(krng) + '-' + str(xname) + '-' + str(gz), mode='markers',
+        marker=dict(size=6, color=np.asarray(rand_scores), opacity=0.5, colorscale='RdYlGn', reversescale=True)
+    ))
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
     fig.show()
     return
 
 
 if __name__ == '__main__':
-    anomaly_detection_for_sequences_using_untrained_lstm_and_l2_optimizer()
+    anomaly_detection_for_sequences_using_untrained_lstm_density_clustering_manifold_learning()
