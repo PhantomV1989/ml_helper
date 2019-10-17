@@ -1965,5 +1965,34 @@ def sequence_anomaly_detector2(decay=0.05):
     return
 
 
+def dissecting_lstm_test():
+    input_size, hidden_size, num_of_layers = 2, 1, 1
+    lstm = t.nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=num_of_layers,
+                     bidirectional=False)
+    x = t.rand(size=[1, 1, input_size])
+    y,h_c = lstm(x)
+
+    w_ii = lstm.weight_ih_l0[0]
+    w_if = lstm.weight_ih_l0[1]
+    w_ig = lstm.weight_ih_l0[2]
+    w_io = lstm.weight_ih_l0[3]
+
+    b_ii = lstm.bias_ih_l0[0]
+    b_if = lstm.bias_ih_l0[1]
+    b_ig = lstm.bias_ih_l0[2]
+    b_io = lstm.bias_ih_l0[3]
+
+    w_hi = lstm.weight_hh_l0[0]
+    w_hf = lstm.weight_hh_l0[1]
+    w_hg = lstm.weight_hh_l0[2]
+    w_ho = lstm.weight_hh_l0[3]
+
+    b_hi = lstm.bias_hh_l0[0]
+    b_hf = lstm.bias_hh_l0[1]
+    b_hg = lstm.bias_hh_l0[2]
+    b_ho = lstm.bias_hh_l0[3]
+    return
+
+
 if __name__ == '__main__':
-    sequence_anomaly_detector2()
+    dissecting_lstm_test()
