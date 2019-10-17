@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.cluster import DBSCAN
+
 
 def manifold_learning_principle_component():
     '''
@@ -8,99 +10,29 @@ def manifold_learning_principle_component():
     '''
     import plotly.graph_objects as go
     fig = go.Figure()
-    krng = 0.08
-    xname = 0.7
-    gz = 0.07
+    krng = 0.04
+    xname = 0.5
+    gz = 0.2
 
-    def get_density_partitions(dataset, density_interval=0.005, min_size=0):
-        if min_size == 0:
-            min_size = round(len(dataset) * 0.1)
-        density = min_size / density_interval
-        axis_cnt = dataset.shape[1]
-        axis_partitions = {}
-        mdata = [[x, [0] * axis_cnt] for x in dataset]
-        tdataset = np.hstack((dataset, np.arange(len(dataset)).reshape(len(dataset), -1)))
-        for i in range(axis_cnt):
-            partition_id = 0
-            _data = tdataset[tdataset[:, i].argsort()]
-
-            ii = 0
-            last_state = False
-            while True:
-                if ii + min_size >= len(_data):
-                    break
-                else:
-                    cwindow = _data[ii:ii + min_size + 1][:, i]
-                    cdensity = min_size / (cwindow.max() - cwindow.min())
-                    state = cdensity > density
-                    if state:
-                        if not last_state:
-                            partition_id += 1
-                        for dd in _data[ii:ii + min_size + 1][:, axis_cnt]:
-                            mdata[int(dd)][1][i] = partition_id
-                    last_state = state
-                ii += 1
-
-        mdata = [[x[0], ''.join([str(y) for y in x[1]])] for x in mdata]
-        dense = list(filter(lambda x: not '0' in x[1], mdata))
-        kd = set([x[1] for x in dense])
-        for d in kd:
-            dset = list(filter(lambda x: x[1] == d, mdata))
-            tr = []
-            for i in range(axis_cnt):
-                axi = [x[0][i] for x in dset]
-                tr.append([np.min(axi), np.max(axi)])
-            axis_partitions[d] = tr
-        mdata = [x[1] for x in mdata]
-        mdata = ['0' * axis_cnt if '0' in x else x for x in mdata]
-
-        lkeys = {}
-        for m in mdata:
-            if not m in lkeys:
-                lkeys[m] = 1
-            else:
-                lkeys[m] += 1
-        if np.std([lkeys[k] for k in lkeys]) < len(data) / 20:
-            return ['0' * axis_cnt] * len(data), {}
-        return mdata, axis_partitions
-
-    def get_principle_components(dataset, density_interval=0.005, min_size=0):
+    def get_principle_components(dataset, rng):
         axis_cnt = np.shape(dataset)[1]
-        dense_labels, dense_partitions = get_density_partitions(dataset, density_interval=density_interval,
-                                                                min_size=min_size)
         pc_bucket = np.zeros_like(dataset)
-        dense_clusters = {}
-        for i, dl in enumerate(dense_labels):
-            if dl != '0' * axis_cnt:
-                if not dl in dense_clusters:
-                    dense_clusters[dl] = [i]
-                else:
-                    dense_clusters[dl].append(i)
-        if dense_clusters == {}:
-            dense_clusters['0' * axis_cnt] = [i for i in range(len(dataset))]
 
-        for dclus in dense_clusters:
-            cluster_pos = dense_clusters[dclus]
-            cluster_points = dataset[cluster_pos, :]
-            max_axis_range = [[cluster_points[:, x].min(), cluster_points[:, x].max()] for x in range(axis_cnt)]
-            max_range = np.linalg.norm(
-                np.asarray([x[0] for x in max_axis_range]) - np.asarray([x[1] for x in max_axis_range]))
-            rng = max_range * krng
-            point_bucket = [[] for x in cluster_points]
+        point_bucket = [[] for x in dataset]
 
-            for i in range(len(cluster_points) - 1):
-                cpoint = cluster_points[i]
-                for ii in range(i + 1, len(cluster_points)):
-                    npoint = cluster_points[ii]
-                    if np.linalg.norm(cpoint - npoint) < rng:  # fills 2 clusters simultaneusly
-                        point_bucket[i].append(npoint)
-                        point_bucket[ii].append(cpoint)
-            den = np.max([len(x) for x in point_bucket])
-            for bi in range(len(point_bucket)):
-                if len(point_bucket[bi]) > 0:
-                    points = np.asarray(point_bucket[bi])
-                    pc = PCA(n_components=1).fit(np.asarray(points)).components_  # alrddy len 1
-                    pc_bucket[cluster_pos[bi]] = pc * len(point_bucket[bi]) / den
+        for i in range(len(dataset) - 1):
+            cpoint = dataset[i]
+            for ii in range(i + 1, len(dataset)):
+                npoint = dataset[ii]
+                if np.linalg.norm(cpoint - npoint) < rng:  # fills 2 clusters simultaneusly
+                    point_bucket[i].append(npoint)
+                    point_bucket[ii].append(cpoint)
+        den = np.max([len(x) for x in point_bucket])
+        for bi in range(len(point_bucket)):
+            if len(point_bucket[bi]) > 0:
+                points = np.asarray(point_bucket[bi])
+                pc = PCA(n_components=1).fit(np.asarray(points)).components_  # alrddy len 1
+                pc_bucket[bi] = pc * len(point_bucket[bi]) / den
 
         _debug = []
         for i in range(len(dataset)):
@@ -122,8 +54,7 @@ def manifold_learning_principle_component():
         fig.add_trace(go.Scatter3d(
             x=x, y=y, z=z,
             hovertext=htext, name=name, mode='markers',  # hoverinfo='text',
-            marker=dict(size=8, color=rrgb(), opacity=0.9,
-                        line=dict(width=1, color='black'))
+            marker=dict(size=6, color=rrgb(), opacity=1)  # ,line=dict(width=1, color='black'))
         ))
         return
 
@@ -137,28 +68,76 @@ def manifold_learning_principle_component():
         ))
         return
 
-    def get_anomaly_score(point, data, vector_field, grid_size, x=0.5):
-        plot_l
+    def get_anomaly_score(point, data, vector_field, score_dist, vector_relative_weightage=0.5, d_angle=10):
         scores = []
-        mx = np.arctanh(0.99) * 0.3 * grid_size
         l2 = np.linalg.norm
-        acom_x = []
+        neighbours, vectors = [], []
+        d_angle_rad = d_angle / 180 * np.pi
+        offset = -np.cos(2 * d_angle_rad)
+        kp = 1 / (1 + offset)
+        kn = -1 / (offset - 1)
+
+        def get_manifold_reducer(angle):
+            a = np.cos(2 * angle) + offset
+            return kp * a if a > 0 else kn * a
+
+        def get_angle(a, b):
+            xx = np.dot(a, b) / l2(a) / l2(b)  # due to round off errors, value can be >1
+            xx = 1.0 if xx > 1 else xx
+            return np.arccos(xx)
+
+        def _h(point, nei, vec):
+            v = nei - point
+            l2d = l2(v)
+            if l2d != 0:
+                if vec.mean() == 0.0:
+                    manifold_reducer = 0
+                else:
+                    angle = get_angle(v, vec)
+                    angle = np.pi / 2 if np.isnan(angle) else angle
+                    manifold_reducer = get_manifold_reducer(angle)
+                    # 1 means max reduc, -1 means max increasing score
+                dist_rat = l2d / score_dist
+                total_reducer = vector_relative_weightage * manifold_reducer + 1 - vector_relative_weightage
+                dist_total_reducer = np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))
+                score = 1 - dist_total_reducer
+                return score
+            else:
+                return 0.0
+
         for i, d in enumerate(data):
             v = d - point
             l2d = l2(v)
-            if l2d < grid_size * 5:  # co-direct 1, oppo -1, right-angles = 0
-                vpt = vector_field[i]
-                angle = np.arccos(np.dot(v, vpt) / l2(vpt) / l2(v))
-                angle = np.pi / 2 if np.isnan(angle) else angle
-                manifold_reducer = 1 - np.tanh(np.abs(np.tan(angle)))  # 1 means max reducing, 0 means no reducing
-
-                total_reducer = x * manifold_reducer + 1 - x
-                dist_total_reducer = np.tanh(mx * total_reducer / l2d)
-                score = 1 - dist_total_reducer
-                acom_x.append([manifold_reducer, dist_total_reducer, angle / np.pi * 180, total_reducer, l2d])
+            if l2d != 0:
+                if l2d < score_dist * 3:
+                    neighbours.append(d)
+                    vectors.append(vector_field[i])
+            else:
+                return 0.0
+        if len(neighbours) == 0:
+            return 1.0
+        dbsmodel = DBSCAN(eps=0.03, min_samples=5).fit(neighbours)
+        _tpoints = {}
+        for i, l in enumerate(dbsmodel.labels_):
+            if l != -1:
+                if not l in _tpoints:
+                    _tpoints[l] = [[neighbours[i], vectors[i], l2(point - neighbours[i])]]
+                else:
+                    _tpoints[l].append([neighbours[i], vectors[i], l2(point - neighbours[i])])
+            else:
+                score = _h(point, neighbours[i], vectors[i])
                 scores.append(score)
+        for k in _tpoints:
+            nei = _tpoints[k][np.argmin([x[2] for x in _tpoints[k]])][0]
+            vnei = np.asarray([x[1] for x in _tpoints[k]])
+            for i in range(len(vnei)):
+                if np.dot(vnei[0], vnei[i]) < 0:
+                    vnei[i] *= -1
+            vnei = vnei.mean(axis=0)
+            score = _h(point, nei, vnei)
+            scores.append(score)
         tscore = np.min(scores) if len(scores) > 0 else 1.0
-        tscore = np.power(tscore, 5.14 * np.power(len(scores), -0.5139))
+        # tscore = np.power(tscore, 1.5 * np.power(len(scores), -0.92) + 0.5)
         return tscore
 
     data = [[0.3, 0.3 + i, 0.4 + i] for i in np.arange(0, 0.3, 0.01)]
@@ -167,45 +146,46 @@ def manifold_learning_principle_component():
 
     # for i in np.linspace(0, 20, 100):
     #     data += [[np.cos(i) / 40, np.sin(i) / 40, i / 40]]
-    for i in range(70):
-        data.append(data[np.random.randint(30)] + 0.01 * np.random.normal(scale=1, size=3))
-        data.append([0.3, np.random.rand(), np.random.rand()])
+    # for i in range(70):
+    #     data.append(data[np.random.randint(30)] + 0.01 * np.random.normal(scale=1, size=3))
+    #     data.append([0.3, np.random.rand(), np.random.rand()])
     data.append([0.3, 0.36, 0.68])
     data.append([0.3, 0.5, 0.8])
     data.append([0.3, 0.5, 0.42])
     data.append([0.3, 0.6, 0.34])
     data.append([0.3, 0.74, 0.82])
-    # for ii in np.arange(0, 0.3, 0.03):
-    #     for jj in np.arange(0, 0.3, 0.03):
-    #         data += [[0.9, 0.4 + ii, 0.4 + jj]]
+    for ii in np.arange(0, 0.3, 0.02):
+        for jj in np.arange(0, 0.3, 0.02):
+            data += [[0.9, 0.4 + ii, 0.4 + jj]]
     #  += [[0.5 + i * 0.6, 0.8 - 0.7 * i, 0.45] for i in np.arange(0, 0.4, 0.02)]
     data = np.asarray(data)
-    data = np.vstack([data, 1 * np.random.rand(100, 3)])
+    # data = np.vstack([data, 1 * np.random.rand(100, 3)])
     # data, scalar = normalize_coordinates(data)
 
     plot_d(data, 'test', data)
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
-    rand_points = []  #
+    rand_points = []
     rand_scores = []
-    nvectors = get_principle_components(data)
-    for i in [0.3, 0.6, 0.9]:  # np.arange(0.27, 0.32, 0.01):
-        for j in np.arange(0, 1, 0.03):
-            for k in np.arange(0, 1, 0.03):
+    nvectors = get_principle_components(data, krng)
+
+    for i in [0.3, 0.9]:  # np.arange(0.27, 0.32, 0.01):
+        for j in np.arange(0, 1, 0.02):
+            for k in np.arange(0, 1, 0.02):
                 new_point = [i, j, k]
-                score = get_anomaly_score(new_point, data, nvectors, grid_size=gz, x=xname)
-                qwe = 0.95
-                if score < qwe:
+                score = get_anomaly_score(new_point, data, nvectors, score_dist=gz, vector_relative_weightage=xname)
+                qwe = 1
+                if score <= qwe:
                     rand_scores.append(score)
                     rand_points.append(new_point)
 
-    pts = [
-        [0.3, 0.38, 0.7]
-    ]
-    for new_point in pts:
-        score = get_anomaly_score(new_point, data, nvectors, grid_size=gz, x=xname)
-        rand_scores.append(score)
-        rand_points.append(new_point)
+    # pts = [
+    #     [0.3, 0.12, 0.24]
+    # ]
+    # for new_point in pts:
+    #     score = get_anomaly_score(new_point, data, nvectors, score_dist=gz, vector_relative_weightage=xname)
+    #     rand_scores.append(score)
+    #     rand_points.append(new_point)
 
     # for i in range(3000):
     #     new_point = data[np.random.randint(len(data))] + 0.05 * np.random.normal(scale=1, size=3)
@@ -222,11 +202,12 @@ def manifold_learning_principle_component():
     fig.add_trace(go.Scatter3d(
         x=x, y=y, z=z,
         hovertext=[str(x) for x in rand_scores], name=str(krng) + '-' + str(xname) + '-' + str(gz), mode='markers',
-        marker=dict(size=6, color=np.asarray(rand_scores), opacity=0.5, colorscale='RdYlGn', reversescale=True)
+        marker=dict(size=4, color=np.asarray(rand_scores), opacity=0.7, colorscale='RdYlGn', reversescale=True)
     ))
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
 
     fig.show()
     return
+
 
 manifold_learning_principle_component()

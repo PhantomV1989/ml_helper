@@ -2510,6 +2510,7 @@ def lstm_soft_tokenizer_test3_bprop():  # conclusion, use hpos 0, do not train!
 def sequence_anomaly_detector():
     '''
     Conclusion: Good, untrained lstm is only sensitive to the most recent events, so need reverse order
+    sum cumulation cant work as well because everything becomes 1D
     :return:
     '''
     import plotly.graph_objects as go
