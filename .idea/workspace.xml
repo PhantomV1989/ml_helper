@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/references/image_compression_using_eigenvectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,47 +17,28 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-340">
+              <caret line="143" column="39" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#2816#2965#0" />
+                <element signature="e#8390#12535#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="1972" column="19" lean-forward="true" selection-start-line="1972" selection-start-column="19" selection-end-line="1972" selection-end-column="19" />
+            <state relative-caret-position="32835">
+              <caret line="2226" column="97" selection-start-line="2226" selection-start-column="9" selection-end-line="2226" selection-end-column="97" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
                 <element signature="e#417#1469#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/references.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="37605">
-              <caret line="2512" column="66" selection-start-line="2512" selection-start-column="66" selection-end-line="2512" selection-end-column="66" />
-              <folding>
-                <element signature="e#0#17#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-120">
-              <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ml_helper.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-719">
-              <caret line="258" column="27" selection-start-line="258" selection-start-column="27" selection-end-line="258" selection-end-column="27" />
             </state>
           </provider>
         </entry>
@@ -69,13 +54,11 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>choice</find>
       <find>create_lstm</find>
       <find>seed</find>
       <find>int</find>
       <find>ap[</find>
       <find>params</find>
-      <find>MSE</find>
       <find>to_emb</find>
       <find>step</find>
       <find>sgd</find>
@@ -99,6 +82,8 @@
       <find>a</find>
       <find>get_densi</find>
       <find>get_pri</find>
+      <find>MSE</find>
+      <find>clu_cnt</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -116,9 +101,10 @@
         <option value="$PROJECT_DIR$/visualizations/multi_line.py" />
         <option value="$PROJECT_DIR$/visualizations/vectors_visualization.py" />
         <option value="$PROJECT_DIR$/visualizations/principle_component_field.py" />
+        <option value="$PROJECT_DIR$/references/image_compression_using_eigenvectors.py" />
         <option value="$PROJECT_DIR$/references.py" />
-        <option value="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" />
         <option value="$PROJECT_DIR$/tests.py" />
+        <option value="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" />
       </list>
     </option>
   </component>
@@ -143,6 +129,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -159,7 +146,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -179,7 +165,28 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.tests">
+  <component name="RunManager" selected="Python.manifold_learning_principle_component">
+    <configuration name="image_compression_using_eigenvectors" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ml_helper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/references" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/references/image_compression_using_eigenvectors.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="manifold_learning_principle_component" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ml_helper" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -285,42 +292,21 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="vectors_visualization" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="ml_helper" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/visualizations" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/visualizations/vectors_visualization.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.references" />
       <item itemvalue="Python.tests" />
       <item itemvalue="Python.plotly_marker_style" />
-      <item itemvalue="Python.vectors_visualization" />
       <item itemvalue="Python.plotly_3d" />
       <item itemvalue="Python.manifold_learning_principle_component" />
+      <item itemvalue="Python.image_compression_using_eigenvectors" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.tests" />
         <item itemvalue="Python.manifold_learning_principle_component" />
+        <item itemvalue="Python.tests" />
+        <item itemvalue="Python.image_compression_using_eigenvectors" />
         <item itemvalue="Python.plotly_marker_style" />
         <item itemvalue="Python.plotly_3d" />
-        <item itemvalue="Python.vectors_visualization" />
       </list>
     </recent_temporary>
   </component>
@@ -361,20 +347,20 @@
     <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4631902" visible="true" weight="0.24705015" />
-      <window_info id="Structure" order="1" sideWeight="0.5368098" side_tool="true" visible="true" weight="0.24705015" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46214098" visible="true" weight="0.30752212" />
+      <window_info id="Structure" order="1" sideWeight="0.537859" side_tool="true" visible="true" weight="0.30752212" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3246951" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3292683" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.5030488" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.41615853" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.3292683" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3262195" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3246951" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -385,7 +371,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/references.py</url>
-          <line>682</line>
+          <line>685</line>
           <option name="timeStamp" value="326" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -444,6 +430,16 @@
           <line>1974</line>
           <option name="timeStamp" value="905" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>2227</line>
+          <option name="timeStamp" value="1014" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py</url>
+          <line>309</line>
+          <option name="timeStamp" value="1019" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -455,13 +451,27 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="lstm.weight_ih_l0.shape" language="Python" />
-        <watch expression="lstm.weight_hh_l0.shape" language="Python" />
+        <watch expression="np.tanh(-0 / np.power(2.3 * dist_rat, 2))" language="Python" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>score&gt;1</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>len()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>diff==0.0</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>score==None</expression-string>
         <language-id>Python</language-id>
@@ -497,65 +507,66 @@
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>score&lt;0</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>score&lt;0.4</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>lstm.weight_ih_l0.shape</expression-string>
+        <expression-string>np.tanh(-0 / np.power(2.3 * dist_rat, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.bias_ih_l0.shape</expression-string>
+        <expression-string>np.tanh(-0.2 / np.power(2.3 * dist_rat, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.weight_hh_l0.shape</expression-string>
+        <expression-string>np.tanh(1 / np.power(2.3 * dist_rat, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.weight_ih_l0[0]</expression-string>
+        <expression-string>np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.weight_ih_l0</expression-string>
+        <expression-string>dist_total_reducer = np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.weigh</expression-string>
+        <expression-string>l2(np.asarray([x[1] for x in _tpoints[k]]).mean(axis=0))*len(_tpoints[k])</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>lstm.</expression-string>
+        <expression-string>l2(np.asarray([x[1] for x in _tpoints[k]]).mean(axis=0))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>_VF</expression-string>
+        <expression-string>np.asarray([x[1] for x in _tpoints[k]]).mean(axis=0)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>[p for layerparams in self.all_weights for p in layerparams]</expression-string>
+        <expression-string>np.asarray([x[1] for x in _tpoints[k]])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>np.tanh(total_reducer / np.power(2.3 * 1, 2))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
     <expressions id="setValue">
+      <expression>
+        <expression-string>'./node_modules/yeast/index.js
+'</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>tensor([[0.9814, 0.6130, 0.2689, 0.7312, 0.0613],
         [0.0446, 0.9328, 0.9027, 0.1150, 0.3414],
@@ -741,28 +752,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/visualizations/principle_component_field.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="1" selection-end-column="37" />
-          <folding>
-            <element signature="e#1#19#0" expanded="true" />
-            <element signature="e#709#2690#0" />
-            <element signature="e#7816#8200#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/references.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="37605">
-          <caret line="2512" column="66" selection-start-line="2512" selection-start-column="66" selection-end-line="2512" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/anaconda3/lib/python3.6/site-packages/torch/nn/_VF.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
@@ -784,27 +773,66 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
+    <entry file="file://$PROJECT_DIR$/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/references/image_compression_using_eigenvectors.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-120">
-          <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
+        <state relative-caret-position="135">
+          <caret line="9" selection-start-line="9" selection-end-line="9" selection-end-column="28" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#96#114#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizations/principle_component_field.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2025">
+          <caret selection-end-line="1" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/references.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="775">
+          <caret line="2668" column="62" selection-start-line="2668" selection-start-column="62" selection-end-line="2668" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#95084#98011#0" />
+            <element signature="e#104467#107260#0" />
+            <element signature="e#107328#110278#0" />
+            <element signature="e#110330#113827#0" />
+            <element signature="e#113887#117434#0" />
+            <element signature="e#117491#120536#0" />
+            <element signature="e#120597#124048#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ml_helper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-719">
-          <caret line="258" column="27" selection-start-line="258" selection-start-column="27" selection-end-line="258" selection-end-column="27" />
+        <state relative-caret-position="-3463">
+          <caret line="280" column="6" selection-start-line="280" selection-start-column="6" selection-end-line="280" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-340">
+          <caret line="143" column="39" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#2816#2965#0" />
+            <element signature="e#8390#12535#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="1972" column="19" lean-forward="true" selection-start-line="1972" selection-start-column="19" selection-end-line="1972" selection-end-column="19" />
+        <state relative-caret-position="32835">
+          <caret line="2226" column="97" selection-start-line="2226" selection-start-column="9" selection-end-line="2226" selection-end-column="97" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
             <element signature="e#417#1469#0" />

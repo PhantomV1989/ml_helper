@@ -18,6 +18,8 @@ Autoencoder does not always have a folded distribution despite training every va
 '''
 
 tdevice = t.device('cpu')
+
+
 def pytorch_lstm_and_lstmcell_test():
     emb_in = 5
     emb_out = 2
@@ -39,11 +41,12 @@ def pytorch_lstm_and_lstmcell_test():
                                                           device=tdevice)
     lstmc_seq = lstmc(test)
     lstmc_unit = lstmc(test[0:1], init2)
-    if abs((lstmc_seq[0][0] - lstmc_unit[0][0]).mean().cpu().data.numpy()) < 1E-7: # for some reason, error is 1E-9
+    if abs((lstmc_seq[0][0] - lstmc_unit[0][0]).mean().cpu().data.numpy()) < 1E-7:  # for some reason, error is 1E-9
         print('LSTM cell output for 1st of seq and only 1st seq is same')
     else:
         print('LSTM inconsistent')
     return
+
 
 def torch_backward_list_tensor_test():
     # conclusion, do not backward a list, 30x slower
@@ -2507,81 +2510,833 @@ def lstm_soft_tokenizer_test3_bprop():  # conclusion, use hpos 0, do not train!
     return result
 
 
-def sequence_anomaly_detector():
-    '''
-    Conclusion: Good, untrained lstm is only sensitive to the most recent events, so need reverse order
-    sum cumulation cant work as well because everything becomes 1D
-    :return:
-    '''
-    import plotly.graph_objects as go
-    fig = go.Figure()
-    emb_size = 5
-    s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
-    char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
-    lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
-                                                   device=tdevice)
+def pca_and_svd():
+    from sklearn.decomposition import PCA
+    mat_a = np.random.rand(5, 5)
+    # test numpy and scikearn 's PCA
+    pca = PCA(n_components=5)
+    pca.fit(mat_a)
 
-    def str_to_emb(_str):
-        pos = [s.find(x) for x in _str]
-        new_char = np.where(np.asarray(pos) == -1)[0]
-        for pp in new_char:
-            pos[pp] = 0
-            print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
-        if pos.__contains__(-1):
-            if pos.index(-1) >= 0:
-                print('Unknown char found:', _str[pos.index(-1)])
-        pos = t.tensor(pos, dtype=t.int64, device=tdevice)
-        return char_emb.index_select(dim=0, index=pos)
+    cov = np.cov(mat_a.transpose())
+    ev, eig = np.linalg.eig(cov)  # the values here should be exactly the same as pca.explained_variance_
 
-    def _h(path, lim):
-        with open(path, 'r') as f:
-            data = f.readlines()
-        # data = [x[:-1] for x in data]  # remove last char \n for a start
-        data = data[5:lim]
-        data1 = [s[::-1] for s in data]
-        data_emb = [str_to_emb(x) for x in data1]
-
-        lstmc_hid_outputs = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
-        x = [x[0] for x in lstmc_hid_outputs]
-        y = [x[1] for x in lstmc_hid_outputs]
-        z = [x[2] for x in lstmc_hid_outputs]
-        return x, y, z, data
-
-    x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
-
-    # start plotting
-    fig.add_trace(go.Scatter3d(
-        x=x1, y=y1, z=z1,
-        hovertext=n1,
-        hoverinfo='text',  # this means xzy info is removed from hover
-        name="a",
-        mode='markers',
-        marker=dict(
-            size=8,
-            color='blue',  # set color to an array/list of desired values
-            opacity=0.7
-        )
-    ))
-
-    x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
-
-    # start plotting
-    fig.add_trace(go.Scatter3d(
-        x=x2, y=y2, z=z2,
-        hovertext=n2,
-        hoverinfo='text',  # this means xzy info is removed from hover
-        name="b",
-        mode='markers',
-        marker=dict(
-            size=8,
-            color='green',  # set color to an array/list of desired values
-            opacity=0.7
-        )
-    ))
-    fig.update_traces(marker=dict(line=dict(width=1, color='white')))
-    fig.show()
+    U, S, V = np.linalg.svd(cov)
+    # equality between SVD and PCA only works on square symmetric positive semidefinite matrix
+    # S must be SAME as EV
     return
 
 
+class sequence_clustering_v1:
+    
+
+    @staticmethod
+    def sequence_anomaly_detector_lstm():
+        '''
+        Conclusion: Good, untrained lstm is only sensitive to the most recent events, so need reverse order
+        sum cumulation cant work as well because everything becomes 1D
+        :return:
+        '''
+        import plotly.graph_objects as go
+        fig = go.Figure()
+        emb_size = 5
+        hid_size = 100
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        lstm = t.nn.LSTM(input_size=emb_size, hidden_size=hid_size, num_layers=1, bidirectional=False)
+        fc = t.rand(size=[hid_size, 8])
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def _h(path, lim):
+            import os
+            with open(os.path.dirname(__file__) + path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+            data_emb = [str_to_emb(x) for x in data1]
+
+            out_emb = [lstm(x.unsqueeze(1))[1][0].squeeze(0).mm(fc).squeeze().data.numpy() for x in data_emb]
+
+            x = [x[0] for x in out_emb]
+            y = [x[1] for x in out_emb]
+            z = [x[2] for x in out_emb]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('/data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('/data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_with_fc():
+        '''
+        fc dim must be >3 for clustering to work in 3d space, else 2d or less!
+        :return:
+        '''
+        import plotly.graph_objects as go
+        fig = go.Figure()
+        emb_size = 100
+        out = 200
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        # lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+        #                                                device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        bias = 2 * t.rand(size=[out]) - 1
+        fc = t.rand(size=[out, 12])
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def fprop(data, p=t.zeros(size=[out])):
+            # input = t.cat([data[0], p])
+            # output = (input.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            # # output = (input.unsqueeze(0).mm(modela).squeeze() + bias).sigmoid()
+            # ldata = data[1:]
+            # if ldata.size()[0] > 0:
+            #     return fprop(ldata, output)
+            # else:
+            #     return output.unsqueeze(0).mm(fc).squeeze().softmax(dim=0)
+            for d in data:
+                ind = t.cat([d, p])
+                p = (ind.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            return p
+
+        def _h(path, lim):
+            with open('/'.join(__file__.split('/')[:-1]) + path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+
+            out_emb = [fprop(x) for x in [str_to_emb(x) for x in data1]]
+            x = [x[0] for x in out_emb]
+            y = [x[1] for x in out_emb]
+            z = [x[2] for x in out_emb]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('/data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('/data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_with_fc_strong_hierarchical():
+        '''
+        Hierarchical structure is clearly seen here.
+        :return:
+        '''
+        import plotly.graph_objects as go
+        fig = go.Figure()
+        emb_size = 100
+        out = 200
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        fc = t.rand(size=[out, 8])
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def fprop2(data):
+            acum = t.zeros(size=[emb_size])
+            decay = 1
+            for i in range(len(data)):
+                acum += data[i] / decay
+                decay *= 1.2
+            return acum
+
+        def _h(path, lim):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+
+            out_emb = [fprop2(x) for x in [str_to_emb(x) for x in data]]
+            x = [x[0] for x in out_emb]
+            y = [x[1] for x in out_emb]
+            z = [x[2] for x in out_emb]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    def sequence_anomaly_detector_autoencoder():
+        '''
+        The hierarchical clustering is better than sequence_anomaly_detector_with_fc_strong_hierarchical() because
+        parent directory is grouped more closely to its child
+        :return:
+        '''
+        import plotly.graph_objects as go
+        from ml_helper import TorchHelper as th
+        fig = go.Figure()
+        emb_size = 10
+        out = 20
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        # lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+        #                                                device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        enc, ep = th.create_linear_layers(layer_sizes=[out, 30, 10])
+        dec, dp = th.create_linear_layers(layer_sizes=[10, 30, out])
+        op = t.optim.SGD(params=ep + dp, lr=1e-1)
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def train(data, epoch):
+            for i in range(epoch):
+                _y, y, _ = fprop(data)
+
+                loss = t.nn.MSELoss()(_y, y)
+                print(loss)
+                loss.backward()
+                op.step()
+                op.zero_grad()
+            return
+
+        def fprop(data):
+            def _h(data, p=t.zeros(size=[out])):
+                for d in data:
+                    ind = t.cat([d, p])
+                    p = (ind.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+                return p
+
+            emb = [_h(d) for d in data]
+
+            def _f(d, nn):
+                out = d
+                for n in nn:
+                    out = n(out)
+                return out
+
+            def ff(d):
+                encoding = _f(d, enc)
+                output = _f(encoding, dec)
+                return output, encoding
+
+            yenc = [ff(x) for x in emb]
+            _y = [x[0] for x in yenc]
+            encodings = [x[1] for x in yenc]
+            return t.stack(_y), t.stack(emb), t.stack(encodings)
+
+        def _h(path, lim):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+            out_emb = [str_to_emb(x) for x in data1]
+            train(out_emb, 50)
+            _y, _y, encodings = fprop(out_emb)
+            encodings = encodings.cpu().data.numpy()
+            x = [x[0] for x in encodings]
+            y = [x[1] for x in encodings]
+            z = [x[2] for x in encodings]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        #
+        # x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+        #
+        # # start plotting
+        # fig.add_trace(go.Scatter3d(
+        #     x=x2, y=y2, z=z2,
+        #     hovertext=n2,
+        #     hoverinfo='text',  # this means xzy info is removed from hover
+        #     name="b",
+        #     mode='markers',
+        #     marker=dict(
+        #         size=8,
+        #         color='green',  # set color to an array/list of desired values
+        #         opacity=0.7
+        #     )
+        # ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_with_fc2_for_string():
+        '''
+        visually bad
+        :return:
+        '''
+        import plotly.graph_objects as go
+        fig = go.Figure()
+        emb_size = 100
+        out = 200
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        fc = t.rand(size=[out, 8])
+
+        def str_to_emb(stri):
+            def _h(_str):
+                pos = [s.find(x) for x in _str]
+                new_char = np.where(np.asarray(pos) == -1)[0]
+                for pp in new_char:
+                    pos[pp] = 0
+                    print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+                if pos.__contains__(-1):
+                    if pos.index(-1) >= 0:
+                        print('Unknown char found:', _str[pos.index(-1)])
+                pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+                return char_emb.index_select(dim=0, index=pos)
+
+            tokens = stri.split('/')
+            token_emb = [_h(x).mean(dim=0) for x in tokens]
+            return token_emb
+
+        def fprop2(data):
+            acum = t.zeros(size=[emb_size])
+            decay = 1
+            for i in range(len(data)):
+                acum += data[i] / decay
+                decay *= 20
+            return acum
+
+        def _h(path, lim):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+
+            out_emb = [fprop2(x) for x in [str_to_emb(x) for x in data]]
+            x = [x[0] for x in out_emb]
+            y = [x[1] for x in out_emb]
+            z = [x[2] for x in out_emb]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_mds():
+        '''
+        Conclusion: Half-good. Close points are related, far points may be related
+        :return:
+        '''
+        import plotly.graph_objects as go
+        from sklearn.manifold import MDS
+        fig = go.Figure()
+        emb_size = 10
+        out = 5
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        # lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+        #                                                device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        bias = 2 * t.rand(size=[out]) - 1
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def fprop(data, p=t.zeros(size=[out])):
+            input = t.cat([data[0], p])
+            output = (input.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            # output = (input.unsqueeze(0).mm(modela).squeeze() + bias).sigmoid()
+            ldata = data[1:]
+            if ldata.size()[0] > 0:
+                return fprop(ldata, output)
+            else:
+                return output
+            return
+
+        def _h(path, lim):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+            data_emb = [str_to_emb(x) for x in data1]
+
+            emb_out = [fprop(x).cpu().data.numpy() for x in data_emb]
+            emb_out = np.asarray(emb_out)
+
+            embedding = MDS(n_components=3)
+            emb_out = embedding.fit_transform(emb_out)
+
+            x = [x[0] for x in emb_out]
+            y = [x[1] for x in emb_out]
+            z = [x[2] for x in emb_out]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_with_fc_mds():
+        '''
+        While FC is good, MDS screws up clustering
+        :return:
+        '''
+        import plotly.graph_objects as go
+        from sklearn.manifold import MDS
+        fig = go.Figure()
+        emb_size = 150
+        out = 500
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        # lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+        #                                                device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        bias = 2 * t.rand(size=[out]) - 1
+        fc = t.rand(size=[out, 5])
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def fprop(data, p=t.zeros(size=[out])):
+            input = t.cat([data[0], p])
+            output = (input.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            # output = (input.unsqueeze(0).mm(modela).squeeze() + bias).sigmoid()
+            ldata = data[1:]
+            if ldata.size()[0] > 0:
+                return fprop(ldata, output)
+            else:
+                return output.unsqueeze(0).mm(fc).squeeze().softmax(dim=0)
+            return
+
+        def _h(path, lim):
+            with open(path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+            data_emb = [str_to_emb(x) for x in data1]
+
+            emb_out = [fprop(x).cpu().data.numpy() for x in data_emb]
+            emb_out = np.asarray(emb_out)
+
+            embedding = MDS(n_components=3)
+            emb_out = embedding.fit_transform(emb_out)
+            x = [x[0] for x in emb_out]
+            y = [x[1] for x in emb_out]
+            z = [x[2] for x in emb_out]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('./data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('./data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_lstm_mds():
+        '''
+        Conclusion: MDS seems to screw up micro clusters that are very close together yet still retain their distinct shapes
+        :return:
+        '''
+        import plotly.graph_objects as go
+        from sklearn.manifold import MDS
+        fig = go.Figure()
+        emb_size = 5
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1,
+                                                       num_of_layers=1,
+                                                       device=tdevice)
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def _h(path, lim):
+            import os
+            with open(os.path.dirname(__file__) + path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+            data_emb = [str_to_emb(x) for x in data1]
+
+            emb_out = [lstm(x.unsqueeze(1), init)[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+            embedding = MDS(n_components=3)
+            emb_out = embedding.fit_transform(np.asarray(emb_out))
+            x = [x[0] for x in emb_out]
+            y = [x[1] for x in emb_out]
+            z = [x[2] for x in emb_out]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('/data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('/data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
+    def sequence_anomaly_detector_length_limit():
+        '''
+        Conclusion: Sequence length sensitvity is determined by hidden_layer size till optimal peak
+        Emb size: 5     Hid size: 400    Max str len: 215
+        Emb size: 10     Hid size: 400    Max str len: 190
+        Emb size: 20     Hid size: 400    Max str len: 210
+        Emb size: 50     Hid size: 400    Max str len: 65
+        Emb size: 200     Hid size: 400    Max str len: 460
+        Emb size: 5     Hid size: 10    Max str len: 45
+        Emb size: 5     Hid size: 20    Max str len: 45
+        Emb size: 5     Hid size: 40    Max str len: 55
+        Emb size: 5     Hid size: 60    Max str len: 75
+        Emb size: 5     Hid size: 80    Max str len: 440  <---peak, after this is a decline
+        Emb size: 5     Hid size: 100    Max str len: 285
+        Emb size: 5     Hid size: 300    Max str len: 270
+        Emb size: 5     Hid size: 500    Max str len: 140
+        Emb size: 5     Hid size: 800    Max str len: 70
+        :return:
+        '''
+        emb_size = 5
+
+        def f(emb_size, hid_size):
+            s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+            char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+            lstm = t.nn.LSTM(input_size=emb_size, hidden_size=hid_size, num_layers=1, bidirectional=False)
+
+            def str_to_emb(_str):
+                pos = [s.find(x) for x in _str]
+                new_char = np.where(np.asarray(pos) == -1)[0]
+                for pp in new_char:
+                    pos[pp] = 0
+                    print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+                if pos.__contains__(-1):
+                    if pos.index(-1) >= 0:
+                        print('Unknown char found:', _str[pos.index(-1)])
+                pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+                return char_emb.index_select(dim=0, index=pos)
+
+            def _h(lim):
+                roots = ''.join(np.random.choice(list(s), lim))
+                data = [
+                    roots + np.random.choice(list(s)),
+                    roots + np.random.choice(list(s)),
+                ]
+                data1 = [s[::-1] for s in data]
+                data_emb = [str_to_emb(x) for x in data1]
+
+                lstmc_hid_outputs = [lstm(x.unsqueeze(1))[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+                print(hid_size, ':', lim, ':', (lstmc_hid_outputs[0] - lstmc_hid_outputs[1]).mean())
+                return
+
+            for i in range(20, 500, 5):
+                roots = ''.join(np.random.choice(list(s), i))
+                data = [
+                    roots + np.random.choice(list(s)),
+                    roots + np.random.choice(list(s)),
+                ]
+                data1 = [s[::-1] for s in data]
+                data_emb = [str_to_emb(x) for x in data1]
+
+                lstmc_hid_outputs = [lstm(x.unsqueeze(1))[1][0].squeeze().cpu().data.numpy() for x in data_emb]
+                diff = (lstmc_hid_outputs[0] - lstmc_hid_outputs[1]).mean()
+                if diff == 0.0:
+                    print('Emb size:', emb_size, '    Hid size:', hid_size, '   Max str len:', i)
+                    break
+
+        for emb_size in [5, 10, 20, 30, 50, 70, 100, 200]:
+            f(emb_size, 400)
+        for hid_size in [10, 20, 40, 60, 80, 100, 150, 200, 300, 500, 800, 1000, 2000]:
+            f(5, hid_size)
+
+        return
+
+
 if __name__ == '__main__':
-    sequence_anomaly_detector()
+    sequence_clustering_v1.sequence_anomaly_detector_with_fc()

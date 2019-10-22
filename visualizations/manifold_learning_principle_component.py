@@ -10,8 +10,8 @@ def manifold_learning_principle_component():
     '''
     import plotly.graph_objects as go
     fig = go.Figure()
-    krng = 0.04
-    xname = 0.5
+    krng = 0.1
+    xname = 0.7
     gz = 0.2
 
     def get_principle_components(dataset, rng):
@@ -27,12 +27,12 @@ def manifold_learning_principle_component():
                 if np.linalg.norm(cpoint - npoint) < rng:  # fills 2 clusters simultaneusly
                     point_bucket[i].append(npoint)
                     point_bucket[ii].append(cpoint)
-        den = np.max([len(x) for x in point_bucket])
+        # den = np.max([len(x) for x in point_bucket])
         for bi in range(len(point_bucket)):
             if len(point_bucket[bi]) > 0:
                 points = np.asarray(point_bucket[bi])
                 pc = PCA(n_components=1).fit(np.asarray(points)).components_  # alrddy len 1
-                pc_bucket[bi] = pc * len(point_bucket[bi]) / den
+                pc_bucket[bi] = pc  # * len(point_bucket[bi]) / den
 
         _debug = []
         for i in range(len(dataset)):
@@ -68,7 +68,7 @@ def manifold_learning_principle_component():
         ))
         return
 
-    def get_anomaly_score(point, data, vector_field, score_dist, vector_relative_weightage=0.5, d_angle=10):
+    def get_anomaly_score(point, data, vector_field, score_dist, vector_relative_weightage=0.5, d_angle=15):
         scores = []
         l2 = np.linalg.norm
         neighbours, vectors = [], []
@@ -77,9 +77,16 @@ def manifold_learning_principle_component():
         kp = 1 / (1 + offset)
         kn = -1 / (offset - 1)
 
-        def get_manifold_reducer(angle):
+        def get_manifold_reducer(v, vec):
+            angle = get_angle(v, vec)
+            vlen = l2(vec)
+            vlen_sc = np.power(vlen, 2)  # filters for strong directionality
+            angle = np.pi / 2 if np.isnan(angle) else angle
+
             a = np.cos(2 * angle) + offset
-            return kp * a if a > 0 else kn * a
+            angle_factor = kp * a if a > 0 else kn * a
+            reducer = angle_factor * vlen_sc
+            return reducer
 
         def get_angle(a, b):
             xx = np.dot(a, b) / l2(a) / l2(b)  # due to round off errors, value can be >1
@@ -89,17 +96,17 @@ def manifold_learning_principle_component():
         def _h(point, nei, vec):
             v = nei - point
             l2d = l2(v)
-            if l2d != 0:
+            if l2d > 1E-6:
                 if vec.mean() == 0.0:
                     manifold_reducer = 0
                 else:
-                    angle = get_angle(v, vec)
-                    angle = np.pi / 2 if np.isnan(angle) else angle
-                    manifold_reducer = get_manifold_reducer(angle)
+                    manifold_reducer = get_manifold_reducer(v, vec)
                     # 1 means max reduc, -1 means max increasing score
                 dist_rat = l2d / score_dist
                 total_reducer = vector_relative_weightage * manifold_reducer + 1 - vector_relative_weightage
                 dist_total_reducer = np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))
+                if dist_total_reducer < 0:
+                    dist_total_reducer = 0
                 score = 1 - dist_total_reducer
                 return score
             else:
@@ -109,14 +116,14 @@ def manifold_learning_principle_component():
             v = d - point
             l2d = l2(v)
             if l2d != 0:
-                if l2d < score_dist * 3:
+                if l2d < score_dist * 2:
                     neighbours.append(d)
                     vectors.append(vector_field[i])
             else:
                 return 0.0
         if len(neighbours) == 0:
             return 1.0
-        dbsmodel = DBSCAN(eps=0.03, min_samples=5).fit(neighbours)
+        dbsmodel = DBSCAN(eps=0.04, min_samples=5).fit(neighbours)
         _tpoints = {}
         for i, l in enumerate(dbsmodel.labels_):
             if l != -1:
@@ -137,7 +144,9 @@ def manifold_learning_principle_component():
             score = _h(point, nei, vnei)
             scores.append(score)
         tscore = np.min(scores) if len(scores) > 0 else 1.0
-        # tscore = np.power(tscore, 1.5 * np.power(len(scores), -0.92) + 0.5)
+        tscore = 1 - 1.5 * np.tanh(len(neighbours) / 5) * (1 - tscore)
+        if tscore < 0:
+            tscore = 0
         return tscore
 
     data = [[0.3, 0.3 + i, 0.4 + i] for i in np.arange(0, 0.3, 0.01)]
@@ -151,9 +160,14 @@ def manifold_learning_principle_component():
     #     data.append([0.3, np.random.rand(), np.random.rand()])
     data.append([0.3, 0.36, 0.68])
     data.append([0.3, 0.5, 0.8])
-    data.append([0.3, 0.5, 0.42])
+    data.append([0.3, 0.5, 0.6])
     data.append([0.3, 0.6, 0.34])
     data.append([0.3, 0.74, 0.82])
+    data.append([0.3, 0.96, 0.06])
+    data.append([0.3, 0.96, 0.96])
+    data.append([0.3, 0.98, 0.98])
+    data.append([0.3, 0.92, 0.92])
+    data.append([0.3, 0.88, 0.88])
     for ii in np.arange(0, 0.3, 0.02):
         for jj in np.arange(0, 0.3, 0.02):
             data += [[0.9, 0.4 + ii, 0.4 + jj]]
@@ -174,18 +188,18 @@ def manifold_learning_principle_component():
             for k in np.arange(0, 1, 0.02):
                 new_point = [i, j, k]
                 score = get_anomaly_score(new_point, data, nvectors, score_dist=gz, vector_relative_weightage=xname)
-                qwe = 1
-                if score <= qwe:
-                    rand_scores.append(score)
-                    rand_points.append(new_point)
 
-    # pts = [
-    #     [0.3, 0.12, 0.24]
-    # ]
-    # for new_point in pts:
-    #     score = get_anomaly_score(new_point, data, nvectors, score_dist=gz, vector_relative_weightage=xname)
-    #     rand_scores.append(score)
-    #     rand_points.append(new_point)
+                rand_scores.append(score)
+                rand_points.append(new_point)
+
+    pts = [
+        [0.9, 0.58, 0.76]
+        # [0.3, 0.22, 0.32]
+    ]
+    for new_point in pts:
+        score = get_anomaly_score(new_point, data, nvectors, score_dist=gz, vector_relative_weightage=xname)
+        rand_scores.append(score)
+        rand_points.append(new_point)
 
     # for i in range(3000):
     #     new_point = data[np.random.randint(len(data))] + 0.05 * np.random.normal(scale=1, size=3)
@@ -210,4 +224,125 @@ def manifold_learning_principle_component():
     return
 
 
+def manifold_learning_autoencoder():
+    '''
+    Note! The axis are not uniform in scale
+    :return:
+    '''
+    import plotly.graph_objects as go
+    from ml_helper import TorchHelper as th
+    import torch as t
+    fig = go.Figure()
+    epoch = 100
+
+    def train(data, epoch):
+        data = t.tensor(data, dtype=t.float32)
+        enc, ep = th.create_linear_layers(layer_sizes=[3, 10, 1])
+        dec, dp = th.create_linear_layers(layer_sizes=[1, 10, 3])
+        op = t.optim.SGD(params=ep + dp, lr=1e-1)
+
+        def fprop(data):
+            def _f(d, nn):
+                out = d
+                for n in nn:
+                    out = n(out).sigmoid()
+                return out
+
+            def ff(d):
+                encoding = _f(d, enc)
+                output = _f(encoding, dec)
+                return output, encoding
+
+            yenc = [ff(x) for x in data]
+            _y = [x[0] for x in yenc]
+            encodings = [x[1] for x in yenc]
+            return t.stack(_y), data, t.stack(encodings)
+
+        def loss_fn(data):
+            _y, y, _ = fprop(data)
+            loss = t.nn.MSELoss()(_y, y)
+            return loss
+
+        for i in range(epoch):
+            loss = loss_fn(data)
+            if i % 10 == 0:
+                print(i, ':', loss)
+            loss.backward()
+            op.step()
+            op.zero_grad()
+        return loss_fn
+
+    def rrgb():
+        return 'rgb(' + str(np.random.randint(0, 255)) + ',' + str(np.random.randint(0, 255)) + ',' + str(
+            np.random.randint(0, 255)) + ')'
+
+    def plot_d(dataset, name, htext):
+        x = [x[0] for x in dataset]
+        y = [x[1] for x in dataset]
+        z = [x[2] for x in dataset]
+
+        fig.add_trace(go.Scatter3d(
+            x=x, y=y, z=z,
+            hovertext=htext, name=name, mode='markers',  # hoverinfo='text',
+            marker=dict(size=6, color=rrgb(), opacity=1)  # ,line=dict(width=1, color='black'))
+        ))
+        return
+
+    data = [[0.3, 0.3 + i, 0.4 + i] for i in np.arange(0, 0.3, 0.01)]
+    # data += [[0.01, 0.2, 0.4 + i] for i in np.arange(0, 0.3, 0.01)]
+    # data += [[0.28, 0.32 + i, 0.42 + i] for i in np.arange(0, 0.3, 0.01)]
+
+    # for i in np.linspace(0, 20, 100):
+    #     data += [[np.cos(i) / 40, np.sin(i) / 40, i / 40]]
+    # for i in range(70):
+    #     data.append(data[np.random.randint(30)] + 0.01 * np.random.normal(scale=1, size=3))
+    #     data.append([0.3, np.random.rand(), np.random.rand()])
+    data.append([0.3, 0.36, 0.68])
+    data.append([0.3, 0.5, 0.8])
+    data.append([0.3, 0.5, 0.6])
+    data.append([0.3, 0.6, 0.34])
+    data.append([0.3, 0.74, 0.82])
+    data.append([0.3, 0.96, 0.06])
+    data.append([0.3, 0.96, 0.96])
+    data.append([0.3, 0.98, 0.98])
+    data.append([0.3, 0.92, 0.92])
+    data.append([0.3, 0.88, 0.88])
+    for ii in np.arange(0, 0.3, 0.02):
+        for jj in np.arange(0, 0.3, 0.02):
+            data += [[0.9, 0.4 + ii, 0.4 + jj]]
+    #  += [[0.5 + i * 0.6, 0.8 - 0.7 * i, 0.45] for i in np.arange(0, 0.4, 0.02)]
+    data = np.asarray(data)
+    # data = np.vstack([data, 1 * np.random.rand(100, 3)])
+    # data, scalar = normalize_coordinates(data)
+
+    lfn = train(data, epoch)
+    plot_d(data, 'test', data)
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points start~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+    rand_points = []
+    rand_scores = []
+
+    for i in [0.3, 0.9]:  # np.arange(0.27, 0.32, 0.01):
+        for j in np.arange(0, 1, 0.02):
+            for k in np.arange(0, 1, 0.02):
+                new_point = [i, j, k]
+                score = lfn(t.tensor([new_point])).cpu().item()
+                rand_scores.append(score)
+                rand_points.append(new_point)
+    x = [x[0] for x in rand_points]
+    y = [x[1] for x in rand_points]
+    z = [x[2] for x in rand_points]
+
+    fig.add_trace(go.Scatter3d(
+        x=x, y=y, z=z,
+        hovertext=[str(x) for x in rand_scores], name=epoch, mode='markers',
+        marker=dict(size=4, color=np.asarray(rand_scores), opacity=0.7, colorscale='RdYlGn', reversescale=True)
+    ))
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~new points end~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+    fig.show()
+    return
+
+
+# manifold_learning_autoencoder()
 manifold_learning_principle_component()
