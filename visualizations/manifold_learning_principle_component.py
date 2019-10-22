@@ -13,6 +13,7 @@ def manifold_learning_principle_component():
     krng = 0.1
     xname = 0.7
     gz = 0.2
+    min_dist = 1E-3
 
     def get_principle_components(dataset, rng):
         axis_cnt = np.shape(dataset)[1]
@@ -96,7 +97,8 @@ def manifold_learning_principle_component():
         def _h(point, nei, vec):
             v = nei - point
             l2d = l2(v)
-            if l2d > 1E-6:
+
+            if l2d > min_dist:
                 if vec.mean() == 0.0:
                     manifold_reducer = 0
                 else:
@@ -115,7 +117,7 @@ def manifold_learning_principle_component():
         for i, d in enumerate(data):
             v = d - point
             l2d = l2(v)
-            if l2d != 0:
+            if l2d > min_dist:
                 if l2d < score_dist * 2:
                     neighbours.append(d)
                     vectors.append(vector_field[i])

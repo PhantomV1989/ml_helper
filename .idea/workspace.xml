@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/references/image_compression_using_eigenvectors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,12 +16,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-340">
-              <caret line="143" column="39" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+            <state relative-caret-position="298">
+              <caret line="119" column="29" selection-start-line="119" selection-start-column="29" selection-end-line="119" selection-end-column="29" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <element signature="e#2816#2965#0" />
-                <element signature="e#8390#12535#0" />
+                <element signature="e#3301#4057#0" />
               </folding>
             </state>
           </provider>
@@ -129,7 +125,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -146,6 +141,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -347,13 +343,13 @@
     <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46214098" visible="true" weight="0.30752212" />
-      <window_info id="Structure" order="1" sideWeight="0.537859" side_tool="true" visible="true" weight="0.30752212" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.46189025" visible="true" weight="0.30752212" />
+      <window_info id="Structure" order="1" sideWeight="0.5381098" side_tool="true" visible="true" weight="0.30752212" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3246951" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3292683" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.41615853" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.41615853" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
@@ -437,7 +433,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py</url>
-          <line>309</line>
+          <line>311</line>
           <option name="timeStamp" value="1019" />
         </line-breakpoint>
       </breakpoints>
@@ -819,12 +815,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-340">
-          <caret line="143" column="39" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+        <state relative-caret-position="298">
+          <caret line="119" column="29" selection-start-line="119" selection-start-column="29" selection-end-line="119" selection-end-column="29" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#2816#2965#0" />
-            <element signature="e#8390#12535#0" />
+            <element signature="e#3301#4057#0" />
           </folding>
         </state>
       </provider>
