@@ -2219,10 +2219,4 @@ def sequence_anomaly_detector_autoencoder():
 
 
 if __name__ == '__main__':
-    a = 'a\tb'
-
-    import numpy as np
-
-    a = [(3, 'a'), (6, 'a'), (3, 'c'), (3, 'b'), (5, 'a')]
-    qwe = sorted(sorted(a, key=lambda x: x[1], reverse=False), key=lambda x: x[0], reverse=False)
     sequence_anomaly_detector_autoencoder()
