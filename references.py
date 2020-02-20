@@ -2702,6 +2702,104 @@ class sequence_clustering_v1:
         return
 
     @staticmethod
+    def sequence_anomaly_detector_with_fc_and_pca():
+        '''
+        This one uses PCA for dim reduction, results are better because they are better spread out
+        :return:
+        '''
+        import plotly.graph_objects as go
+        from sklearn.decomposition import PCA
+        fig = go.Figure()
+        emb_size = 100
+        out = 200
+
+        s = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~Â®\n'
+        char_emb = t.rand(size=[len(s), emb_size], dtype=t.float32, device=tdevice)
+        # lstm, init = ml_helper.TorchHelper.create_lstm(input_size=emb_size, output_size=3, batch_size=1, num_of_layers=1,
+        #                                                device=tdevice)
+        modela = 2 * t.rand(size=[emb_size + out, out]) - 1
+        bias = 2 * t.rand(size=[out]) - 1
+        fc = t.rand(size=[out, 12])
+
+        def str_to_emb(_str):
+            pos = [s.find(x) for x in _str]
+            new_char = np.where(np.asarray(pos) == -1)[0]
+            for pp in new_char:
+                pos[pp] = 0
+                print('Unknown char found:', _str[pp], ' and replaced with WHITESPACE')
+            if pos.__contains__(-1):
+                if pos.index(-1) >= 0:
+                    print('Unknown char found:', _str[pos.index(-1)])
+            pos = t.tensor(pos, dtype=t.int64, device=tdevice)
+            return char_emb.index_select(dim=0, index=pos)
+
+        def fprop(data, p=t.zeros(size=[out])):
+            # input = t.cat([data[0], p])
+            # output = (input.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            # # output = (input.unsqueeze(0).mm(modela).squeeze() + bias).sigmoid()
+            # ldata = data[1:]
+            # if ldata.size()[0] > 0:
+            #     return fprop(ldata, output)
+            # else:
+            #     return output.unsqueeze(0).mm(fc).squeeze().softmax(dim=0)
+            for d in data:
+                ind = t.cat([d, p])
+                p = (ind.unsqueeze(0).mm(modela).squeeze()).sigmoid()
+            return p
+
+        def _h(path, lim):
+            with open('/'.join(__file__.split('/')[:-1]) + path, 'r') as f:
+                data = f.readlines()
+            # data = [x[:-1] for x in data]  # remove last char \n for a start
+            data = data[5:lim]
+            data1 = [s[::-1] for s in data]
+
+            out_emb = [fprop(x) for x in [str_to_emb(x) for x in data1]]
+            out_emb = t.stack(out_emb).data.numpy()
+            pca = PCA(n_components=3)
+            out2 = pca.fit_transform(out_emb)
+
+            x = [x[0] for x in out2]
+            y = [x[1] for x in out2]
+            z = [x[2] for x in out2]
+            return x, y, z, data
+
+        x1, y1, z1, n1 = _h('/data/nodejs_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x1, y=y1, z=z1,
+            hovertext=n1,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="a",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='blue',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+
+        x2, y2, z2, n2 = _h('/data/python_lib_paths.txt', 1000)
+
+        # start plotting
+        fig.add_trace(go.Scatter3d(
+            x=x2, y=y2, z=z2,
+            hovertext=n2,
+            hoverinfo='text',  # this means xzy info is removed from hover
+            name="b",
+            mode='markers',
+            marker=dict(
+                size=8,
+                color='green',  # set color to an array/list of desired values
+                opacity=0.7
+            )
+        ))
+        fig.update_traces(marker=dict(line=dict(width=1, color='white')))
+        fig.show()
+        return
+
+    @staticmethod
     def sequence_anomaly_detector_with_fc_strong_hierarchical():
         '''
         Hierarchical structure is clearly seen here.

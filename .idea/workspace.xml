@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="">
+    <list default="true" id="9ce4daed-eb29-4ac2-a65d-f197451f11a1" name="Default Changelist" comment="sequence_">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/references.py" beforeDir="false" afterPath="$PROJECT_DIR$/references.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,25 +15,25 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
+        <entry file="file://$PROJECT_DIR$/tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="95">
-              <caret line="38" column="37" selection-start-line="38" selection-start-column="37" selection-end-line="38" selection-end-column="37" />
+            <state relative-caret-position="75">
+              <caret line="2239" column="64" selection-start-line="2239" selection-start-column="64" selection-end-line="2239" selection-end-column="64" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#0#17#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests.py">
+        <entry file="file://$PROJECT_DIR$/references.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="32745">
-              <caret line="2220" column="26" selection-start-line="2220" selection-start-column="26" selection-end-line="2220" selection-end-column="26" />
+            <state relative-caret-position="39165">
+              <caret line="2701" column="14" selection-start-line="2701" selection-start-column="14" selection-end-line="2701" selection-end-column="14" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#417#1469#0" />
+                <element signature="e#98597#102125#0" />
               </folding>
             </state>
           </provider>
@@ -98,9 +98,9 @@
         <option value="$PROJECT_DIR$/visualizations/vectors_visualization.py" />
         <option value="$PROJECT_DIR$/visualizations/principle_component_field.py" />
         <option value="$PROJECT_DIR$/references/image_compression_using_eigenvectors.py" />
-        <option value="$PROJECT_DIR$/tests.py" />
-        <option value="$PROJECT_DIR$/references.py" />
         <option value="$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py" />
+        <option value="$PROJECT_DIR$/references.py" />
+        <option value="$PROJECT_DIR$/tests.py" />
       </list>
     </option>
   </component>
@@ -125,7 +125,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -152,6 +151,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -171,7 +171,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.manifold_learning_principle_component">
+  <component name="RunManager" selected="Python.tests">
     <configuration name="image_compression_using_eigenvectors" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ml_helper" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -308,8 +308,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.manifold_learning_principle_component" />
         <item itemvalue="Python.tests" />
+        <item itemvalue="Python.manifold_learning_principle_component" />
         <item itemvalue="Python.image_compression_using_eigenvectors" />
         <item itemvalue="Python.plotly_marker_style" />
         <item itemvalue="Python.plotly_3d" />
@@ -353,17 +353,17 @@
     <frame x="61" y="25" width="1379" height="785" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45454547" visible="true" weight="0.30752212" />
-      <window_info id="Structure" order="1" sideWeight="0.54545456" side_tool="true" visible="true" weight="0.30752212" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.45124716" visible="true" weight="0.28687316" />
+      <window_info id="Structure" order="1" sideWeight="0.54875284" side_tool="true" visible="true" weight="0.28687316" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3246951" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3292683" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.41615853" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.41158536" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32937366" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.3292683" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="7" visible="true" weight="0.3277439" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.3292683" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.3246951" />
@@ -437,9 +437,19 @@
           <option name="timeStamp" value="905" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/references.py</url>
+          <line>3439</line>
+          <option name="timeStamp" value="1015" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tests.py</url>
-          <line>2221</line>
-          <option name="timeStamp" value="1014" />
+          <line>2283</line>
+          <option name="timeStamp" value="1035" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tests.py</url>
+          <line>2265</line>
+          <option name="timeStamp" value="1037" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -452,7 +462,8 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="np.vstack(pc)" language="Python" />
+        <watch expression="(ind.unsqueeze(0).mm(modela).squeeze())" language="Python" />
+        <watch expression="p" language="Python" />
       </configuration>
     </watches-manager>
   </component>
@@ -511,47 +522,52 @@
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>np.vstack(pc)</expression-string>
+        <expression-string>p</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>DBSCAN(eps=0.08, min_samples=5).fit(dataset)</expression-string>
+        <expression-string>(ind.unsqueeze(0).mm(modela).squeeze())</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>DBSCAN(eps=0.1, min_samples=5).fit(dataset)</expression-string>
+        <expression-string>out_emb</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>DBSCAN(eps=0.04, min_samples=5).fit(dataset)</expression-string>
+        <expression-string>p.data.numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.tanh(-0 / np.power(2.3 * dist_rat, 2))</expression-string>
+        <expression-string>ind.unsqueeze(0).mm(modela)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.tanh(-0.2 / np.power(2.3 * dist_rat, 2))</expression-string>
+        <expression-string>ind.data.numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.tanh(1 / np.power(2.3 * dist_rat, 2))</expression-string>
+        <expression-string>ind.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))</expression-string>
+        <expression-string>p.shape</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>dist_total_reducer = np.tanh(total_reducer / np.power(2.3 * dist_rat, 2))</expression-string>
+        <expression-string>d.shape</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>char_emb.index_select(dim=0, index=pos)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -786,16 +802,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/references.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="2613" column="62" selection-start-line="2613" selection-start-column="62" selection-end-line="2613" selection-end-column="62" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/references/image_compression_using_eigenvectors.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -808,8 +814,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/visualizations/manifold_learning_principle_component.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="38" column="37" selection-start-line="38" selection-start-column="37" selection-end-line="38" selection-end-column="37" />
+        <state relative-caret-position="90">
+          <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -818,11 +824,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32745">
-          <caret line="2220" column="26" selection-start-line="2220" selection-start-column="26" selection-end-line="2220" selection-end-column="26" />
+        <state relative-caret-position="75">
+          <caret line="2239" column="64" selection-start-line="2239" selection-start-column="64" selection-end-line="2239" selection-end-column="64" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#417#1469#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/references.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="39165">
+          <caret line="2701" column="14" selection-start-line="2701" selection-start-column="14" selection-end-line="2701" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#98597#102125#0" />
           </folding>
         </state>
       </provider>
